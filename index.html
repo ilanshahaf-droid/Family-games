@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1">
 <title>ערב משחקים משפחתי</title>
-<meta name="theme-color" content="#2c6b56">
+<meta name="theme-color" content="#22314a">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -14,46 +14,53 @@
 <link rel="icon" href="icon-192.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Suez+One&family=Assistant:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Suez+One&family=Rubik:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg:#2c6b56;
-    --bg-deep:#1e4a3c;
-    --surface:#f6efd9;
-    --surface-soft:#efe3c0;
-    --ink:#22201a;
-    --ink-soft:#5c5744;
-    --gold:#d4a73e;
-    --coral:#e2725b;
-    --wood:#6b3f2a;
-    --line:rgba(27,27,20,.16);
-    --shadow:rgba(12,26,21,.35);
+    --bg:#fbf5ea;
+    --bg-panel:#ffffff;
+    --bg-soft:#f2e8d6;
+    --ink:#242838;
+    --ink-soft:#5c6070;
+    --navy:#22314a;
+    --navy-soft:#3a4d6b;
+    --coral:#e2572b;
+    --gold:#d9a441;
+    --ok-bg:#cfead6; --ok-ink:#1f5132;
+    --bad-bg:#f6d2c8; --bad-ink:#7a2415;
+    --line:rgba(34,49,74,.14);
+    --shadow:rgba(34,49,74,.16);
     --tabbar-h:64px;
   }
   @media (prefers-color-scheme: dark){
     :root:not([data-theme="light"]){
-      --bg:#123128; --bg-deep:#0b1e19;
-      --surface:#2b2318; --surface-soft:#352c1d;
-      --ink:#f3ecd8; --ink-soft:#cabf9d;
-      --gold:#e6bd5a; --coral:#ec8b72; --wood:#b0785a;
-      --line:rgba(243,236,216,.18); --shadow:rgba(0,0,0,.55);
+      --bg:#171b26; --bg-panel:#222838; --bg-soft:#2b3244;
+      --ink:#f2ede1; --ink-soft:#b7bdcd;
+      --navy:#10141d; --navy-soft:#242e42;
+      --coral:#f0805f; --gold:#e8c05f;
+      --ok-bg:#204431; --ok-ink:#bfe9cd;
+      --bad-bg:#4a2620; --bad-ink:#f3c3b6;
+      --line:rgba(242,237,225,.14); --shadow:rgba(0,0,0,.5);
     }
   }
   :root[data-theme="dark"]{
-    --bg:#123128; --bg-deep:#0b1e19;
-    --surface:#2b2318; --surface-soft:#352c1d;
-    --ink:#f3ecd8; --ink-soft:#cabf9d;
-    --gold:#e6bd5a; --coral:#ec8b72; --wood:#b0785a;
-    --line:rgba(243,236,216,.18); --shadow:rgba(0,0,0,.55);
+    --bg:#171b26; --bg-panel:#222838; --bg-soft:#2b3244;
+    --ink:#f2ede1; --ink-soft:#b7bdcd;
+    --navy:#10141d; --navy-soft:#242e42;
+    --coral:#f0805f; --gold:#e8c05f;
+    --ok-bg:#204431; --ok-ink:#bfe9cd;
+    --bad-bg:#4a2620; --bad-ink:#f3c3b6;
+    --line:rgba(242,237,225,.14); --shadow:rgba(0,0,0,.5);
   }
   *{box-sizing:border-box;}
   html,body{height:100%;}
   html{scroll-padding-top:env(safe-area-inset-top,0px);}
   body{
     margin:0;
-    font-family:'Assistant',-apple-system,'Segoe UI',sans-serif;
+    font-family:'Rubik',-apple-system,'Segoe UI',sans-serif;
+    font-size:16px;
     color:var(--ink);
-    background:radial-gradient(1200px 800px at 50% -10%, var(--bg) 0%, var(--bg-deep) 75%);
+    background:var(--bg);
     height:100dvh;
     display:flex;
     flex-direction:column;
@@ -65,9 +72,10 @@
     display:flex;
     overflow-x:auto;
     -webkit-overflow-scrolling:touch;
-    gap:4px;
-    padding:calc(env(safe-area-inset-top,0px) + 10px) 10px 8px;
-    background:var(--bg-deep);
+    gap:6px;
+    padding:calc(env(safe-area-inset-top,0px) + 12px) 12px 10px;
+    background:var(--navy);
+    box-shadow:0 4px 14px rgba(0,0,0,.18);
     flex:0 0 auto;
     scrollbar-width:none;
   }
@@ -77,12 +85,12 @@
     display:flex;
     flex-direction:column;
     align-items:center;
-    gap:2px;
-    padding:7px 12px;
-    border-radius:12px;
-    color:var(--surface);
-    opacity:.65;
-    font-size:11.5px;
+    gap:3px;
+    padding:8px 14px;
+    border-radius:14px;
+    color:#eef1f6;
+    opacity:.72;
+    font-size:13px;
     font-weight:700;
     cursor:pointer;
     border:none;
@@ -90,12 +98,13 @@
     white-space:nowrap;
     font-family:inherit;
   }
-  .tab .ic{font-size:20px; line-height:1;}
+  .tab .ic{font-size:21px; line-height:1;}
   .tab.active{
     opacity:1;
-    background:rgba(246,239,217,.14);
+    background:var(--coral);
+    color:#fff;
   }
-  .tab.active .ic{transform:scale(1.08);}
+  .tab.active .ic{transform:scale(1.06);}
 
   /* ---------- Screens ---------- */
   #stage{
@@ -110,7 +119,7 @@
     max-width:640px;
     margin:0 auto;
     width:100%;
-    padding:18px 18px 10px;
+    padding:22px 18px 10px;
     flex:1;
     display:flex;
     flex-direction:column;
@@ -120,105 +129,106 @@
 
   h2.title{
     font-family:'Suez One',serif;
-    font-size:clamp(24px,6.5vw,32px);
-    color:var(--surface);
+    font-size:clamp(26px,7vw,36px);
+    color:var(--navy);
     text-align:center;
-    margin:6px 0 4px;
-    text-shadow:0 2px 0 rgba(0,0,0,.2);
+    margin:6px 0 6px;
   }
   p.sub{
     text-align:center;
-    color:var(--surface);
-    opacity:.85;
-    font-size:14px;
-    margin:0 0 16px;
+    color:var(--ink-soft);
+    font-size:16px;
+    line-height:1.5;
+    margin:0 0 18px;
   }
 
   .panel{
-    background:var(--surface);
+    background:var(--bg-panel);
     border-radius:20px;
-    padding:20px 18px 24px;
-    box-shadow:0 12px 28px var(--shadow);
+    padding:24px 20px 26px;
+    box-shadow:0 10px 26px var(--shadow);
     border:1px solid var(--line);
   }
 
   .btn{
     font-family:inherit;
     font-weight:700;
-    font-size:15px;
+    font-size:16px;
     border:none;
     border-radius:12px;
-    padding:12px 18px;
+    padding:13px 20px;
     cursor:pointer;
-    transition:transform .1s ease, filter .15s ease;
+    transition:transform .1s ease, filter .15s ease, box-shadow .15s ease;
   }
   .btn:active{transform:scale(.96);}
-  .btn.primary{background:var(--gold); color:#2b2318;}
-  .btn.coral{background:var(--coral); color:#2b1410;}
-  .btn.wood{background:var(--wood); color:#fbf3e3;}
-  .btn.outline{background:transparent; border:1.5px solid var(--line); color:var(--ink);}
-  .btn:hover{filter:brightness(1.06);}
-  .btn:disabled{opacity:.45; cursor:default;}
+  .btn.primary{background:var(--coral); color:#fff; box-shadow:0 6px 14px rgba(226,87,43,.35);}
+  .btn.coral{background:var(--coral); color:#fff; box-shadow:0 6px 14px rgba(226,87,43,.35);}
+  .btn.wood{background:var(--navy); color:#fff; box-shadow:0 6px 14px rgba(34,49,74,.35);}
+  .btn.outline{background:transparent; border:1.5px solid var(--navy); color:var(--navy);}
+  .btn:hover{filter:brightness(1.07);}
+  .btn:disabled{opacity:.4; cursor:default; box-shadow:none;}
   .btn.block{width:100%;}
-  .btn.lg{font-size:17px; padding:15px 20px;}
+  .btn.lg{font-size:18px; padding:16px 22px;}
 
-  .chiprow{display:flex; flex-wrap:wrap; gap:8px; justify-content:center; margin-bottom:14px;}
+  .chiprow{display:flex; flex-wrap:wrap; gap:9px; justify-content:center; margin-bottom:16px;}
   .chip{
-    padding:8px 14px; border-radius:999px; border:1.5px solid var(--line);
-    background:var(--surface-soft); color:var(--ink); font-size:13.5px; font-weight:600; cursor:pointer;
+    padding:9px 16px; border-radius:999px; border:1.5px solid var(--line);
+    background:var(--bg-soft); color:var(--ink); font-size:14.5px; font-weight:600; cursor:pointer;
   }
   .chip.selected{background:var(--gold); border-color:var(--gold); color:#2b2318;}
 
   .big-word{
     font-family:'Suez One',serif;
-    font-size:clamp(28px,9vw,46px);
+    font-size:clamp(30px,9.5vw,50px);
     text-align:center;
-    margin:10px 0;
+    margin:12px 0;
     min-height:1.3em;
     color:var(--ink);
+    line-height:1.25;
   }
   .timer{
-    text-align:center; font-size:36px; font-weight:800; color:var(--coral);
-    margin-bottom:4px; font-variant-numeric:tabular-nums;
+    text-align:center; font-size:40px; font-weight:800; color:var(--coral);
+    margin-bottom:6px; font-variant-numeric:tabular-nums;
   }
-  .scoreline{text-align:center; color:var(--ink-soft); font-size:14px; margin-bottom:8px;}
-  .row-actions{display:flex; gap:12px; justify-content:center; margin-top:16px; flex-wrap:wrap;}
+  .scoreline{text-align:center; color:var(--ink-soft); font-size:15px; font-weight:600; margin-bottom:10px;}
+  .row-actions{display:flex; gap:12px; justify-content:center; margin-top:18px; flex-wrap:wrap;}
   .center{text-align:center;}
 
   .qopt{
-    display:block; width:100%; text-align:right; background:var(--surface-soft);
-    border:1.5px solid var(--line); border-radius:12px; padding:13px 16px; margin-bottom:10px;
-    font-size:15.5px; font-family:inherit; color:var(--ink); cursor:pointer;
+    display:block; width:100%; text-align:right; background:var(--bg-soft);
+    border:1.5px solid var(--line); border-radius:12px; padding:14px 16px; margin-bottom:10px;
+    font-size:16.5px; font-weight:600; font-family:inherit; color:var(--ink); cursor:pointer;
   }
-  .qopt.correct{background:#8bbf8f; border-color:#8bbf8f; color:#12271a;}
-  .qopt.wrong{background:#e79a8d; border-color:#e79a8d; color:#3a130b;}
+  .qopt.correct{background:var(--ok-bg); border-color:var(--ok-bg); color:var(--ok-ink);}
+  .qopt.wrong{background:var(--bad-bg); border-color:var(--bad-bg); color:var(--bad-ink);}
   .qopt:disabled{cursor:default;}
 
   .cats-list{
-    display:grid; grid-template-columns:1fr 1fr; gap:8px 16px; margin:14px 0 6px;
+    display:grid; grid-template-columns:1fr 1fr; gap:10px 16px; margin:16px 0 6px;
     list-style:none; padding:0;
   }
-  .cats-list li{background:var(--surface-soft); border-radius:10px; padding:9px 12px; font-size:14.5px; text-align:center;}
+  .cats-list li{background:var(--bg-soft); border-radius:10px; padding:11px 12px; font-size:15.5px; font-weight:600; text-align:center;}
 
   .letter-badge{
-    width:80px; height:80px; border-radius:50%; background:var(--coral); color:#2b1410;
-    font-family:'Suez One',serif; font-size:38px; display:flex; align-items:center; justify-content:center;
-    margin:0 auto 10px; box-shadow:0 6px 14px var(--shadow);
+    width:86px; height:86px; border-radius:50%; background:var(--coral); color:#fff;
+    font-family:'Suez One',serif; font-size:42px; display:flex; align-items:center; justify-content:center;
+    margin:0 auto 12px; box-shadow:0 8px 18px rgba(226,87,43,.4);
   }
 
   .field{
-    width:100%; padding:11px 13px; border-radius:10px; border:1.5px solid var(--line);
-    font-size:14.5px; font-family:inherit; margin-bottom:10px; background:var(--surface-soft); color:var(--ink);
+    width:100%; padding:13px 14px; border-radius:10px; border:1.5px solid var(--line);
+    font-size:15.5px; font-family:inherit; margin-bottom:12px; background:var(--bg-soft); color:var(--ink);
   }
-  .field-label{font-size:13px; font-weight:700; color:var(--ink-soft); margin:0 2px 4px;}
+  .field:focus{outline:2px solid var(--coral); outline-offset:1px;}
+  .field-label{font-size:14px; font-weight:700; color:var(--ink-soft); margin:0 2px 5px;}
 
   .story-output{
-    font-size:17px; line-height:1.9; text-align:right; margin-top:8px;
+    font-size:18px; line-height:1.9; text-align:right; margin-top:8px; color:var(--ink);
   }
   .story-output b{color:var(--coral);}
 
   footer.credit{
-    text-align:center; color:var(--surface); opacity:.5; font-size:11.5px; padding:6px 0 4px;
+    text-align:center; color:var(--ink-soft); opacity:.8; font-size:12.5px; padding:8px 0 6px;
   }
   ::selection{background:var(--gold); color:#2b2318;}
 </style>
@@ -305,7 +315,7 @@
       </div>
     </div>
     <div class="screen-inner top-align" id="triviaPlayWrap" style="display:none;">
-      <p class="scoreline" id="triviaProgress" style="color:var(--surface); opacity:.85;"></p>
+      <p class="scoreline" id="triviaProgress" style="color:var(--ink-soft);"></p>
       <div class="panel">
         <h2 style="font-family:'Suez One',serif; font-size:20px; margin:0 0 14px; text-align:center;" id="triviaQ">שאלה</h2>
         <div id="triviaOpts"></div>
