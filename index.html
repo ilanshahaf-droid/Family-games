@@ -1,0 +1,939 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1">
+<title>ערב משחקים משפחתי</title>
+<meta name="theme-color" content="#2c6b56">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="משחקי משפחה">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="icon" href="icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Suez+One&family=Assistant:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#2c6b56;
+    --bg-deep:#1e4a3c;
+    --surface:#f6efd9;
+    --surface-soft:#efe3c0;
+    --ink:#22201a;
+    --ink-soft:#5c5744;
+    --gold:#d4a73e;
+    --coral:#e2725b;
+    --wood:#6b3f2a;
+    --line:rgba(27,27,20,.16);
+    --shadow:rgba(12,26,21,.35);
+    --tabbar-h:64px;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#123128; --bg-deep:#0b1e19;
+      --surface:#2b2318; --surface-soft:#352c1d;
+      --ink:#f3ecd8; --ink-soft:#cabf9d;
+      --gold:#e6bd5a; --coral:#ec8b72; --wood:#b0785a;
+      --line:rgba(243,236,216,.18); --shadow:rgba(0,0,0,.55);
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#123128; --bg-deep:#0b1e19;
+    --surface:#2b2318; --surface-soft:#352c1d;
+    --ink:#f3ecd8; --ink-soft:#cabf9d;
+    --gold:#e6bd5a; --coral:#ec8b72; --wood:#b0785a;
+    --line:rgba(243,236,216,.18); --shadow:rgba(0,0,0,.55);
+  }
+  *{box-sizing:border-box;}
+  html,body{height:100%;}
+  html{scroll-padding-top:env(safe-area-inset-top,0px);}
+  body{
+    margin:0;
+    font-family:'Assistant',-apple-system,'Segoe UI',sans-serif;
+    color:var(--ink);
+    background:radial-gradient(1200px 800px at 50% -10%, var(--bg) 0%, var(--bg-deep) 75%);
+    height:100dvh;
+    display:flex;
+    flex-direction:column;
+    overflow:hidden;
+  }
+
+  /* ---------- Tab bar ---------- */
+  #tabbar{
+    display:flex;
+    overflow-x:auto;
+    -webkit-overflow-scrolling:touch;
+    gap:4px;
+    padding:calc(env(safe-area-inset-top,0px) + 10px) 10px 8px;
+    background:var(--bg-deep);
+    flex:0 0 auto;
+    scrollbar-width:none;
+  }
+  #tabbar::-webkit-scrollbar{display:none;}
+  .tab{
+    flex:0 0 auto;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:2px;
+    padding:7px 12px;
+    border-radius:12px;
+    color:var(--surface);
+    opacity:.65;
+    font-size:11.5px;
+    font-weight:700;
+    cursor:pointer;
+    border:none;
+    background:transparent;
+    white-space:nowrap;
+    font-family:inherit;
+  }
+  .tab .ic{font-size:20px; line-height:1;}
+  .tab.active{
+    opacity:1;
+    background:rgba(246,239,217,.14);
+  }
+  .tab.active .ic{transform:scale(1.08);}
+
+  /* ---------- Screens ---------- */
+  #stage{
+    flex:1 1 auto;
+    overflow-y:auto;
+    -webkit-overflow-scrolling:touch;
+    padding-bottom:calc(env(safe-area-inset-bottom,0px) + 14px);
+  }
+  .screen{display:none; min-height:100%;}
+  .screen.active{display:flex; flex-direction:column;}
+  .screen-inner{
+    max-width:640px;
+    margin:0 auto;
+    width:100%;
+    padding:18px 18px 10px;
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+  }
+  .screen-inner.top-align{justify-content:flex-start;}
+
+  h2.title{
+    font-family:'Suez One',serif;
+    font-size:clamp(24px,6.5vw,32px);
+    color:var(--surface);
+    text-align:center;
+    margin:6px 0 4px;
+    text-shadow:0 2px 0 rgba(0,0,0,.2);
+  }
+  p.sub{
+    text-align:center;
+    color:var(--surface);
+    opacity:.85;
+    font-size:14px;
+    margin:0 0 16px;
+  }
+
+  .panel{
+    background:var(--surface);
+    border-radius:20px;
+    padding:20px 18px 24px;
+    box-shadow:0 12px 28px var(--shadow);
+    border:1px solid var(--line);
+  }
+
+  .btn{
+    font-family:inherit;
+    font-weight:700;
+    font-size:15px;
+    border:none;
+    border-radius:12px;
+    padding:12px 18px;
+    cursor:pointer;
+    transition:transform .1s ease, filter .15s ease;
+  }
+  .btn:active{transform:scale(.96);}
+  .btn.primary{background:var(--gold); color:#2b2318;}
+  .btn.coral{background:var(--coral); color:#2b1410;}
+  .btn.wood{background:var(--wood); color:#fbf3e3;}
+  .btn.outline{background:transparent; border:1.5px solid var(--line); color:var(--ink);}
+  .btn:hover{filter:brightness(1.06);}
+  .btn:disabled{opacity:.45; cursor:default;}
+  .btn.block{width:100%;}
+  .btn.lg{font-size:17px; padding:15px 20px;}
+
+  .chiprow{display:flex; flex-wrap:wrap; gap:8px; justify-content:center; margin-bottom:14px;}
+  .chip{
+    padding:8px 14px; border-radius:999px; border:1.5px solid var(--line);
+    background:var(--surface-soft); color:var(--ink); font-size:13.5px; font-weight:600; cursor:pointer;
+  }
+  .chip.selected{background:var(--gold); border-color:var(--gold); color:#2b2318;}
+
+  .big-word{
+    font-family:'Suez One',serif;
+    font-size:clamp(28px,9vw,46px);
+    text-align:center;
+    margin:10px 0;
+    min-height:1.3em;
+    color:var(--ink);
+  }
+  .timer{
+    text-align:center; font-size:36px; font-weight:800; color:var(--coral);
+    margin-bottom:4px; font-variant-numeric:tabular-nums;
+  }
+  .scoreline{text-align:center; color:var(--ink-soft); font-size:14px; margin-bottom:8px;}
+  .row-actions{display:flex; gap:12px; justify-content:center; margin-top:16px; flex-wrap:wrap;}
+  .center{text-align:center;}
+
+  .qopt{
+    display:block; width:100%; text-align:right; background:var(--surface-soft);
+    border:1.5px solid var(--line); border-radius:12px; padding:13px 16px; margin-bottom:10px;
+    font-size:15.5px; font-family:inherit; color:var(--ink); cursor:pointer;
+  }
+  .qopt.correct{background:#8bbf8f; border-color:#8bbf8f; color:#12271a;}
+  .qopt.wrong{background:#e79a8d; border-color:#e79a8d; color:#3a130b;}
+  .qopt:disabled{cursor:default;}
+
+  .cats-list{
+    display:grid; grid-template-columns:1fr 1fr; gap:8px 16px; margin:14px 0 6px;
+    list-style:none; padding:0;
+  }
+  .cats-list li{background:var(--surface-soft); border-radius:10px; padding:9px 12px; font-size:14.5px; text-align:center;}
+
+  .letter-badge{
+    width:80px; height:80px; border-radius:50%; background:var(--coral); color:#2b1410;
+    font-family:'Suez One',serif; font-size:38px; display:flex; align-items:center; justify-content:center;
+    margin:0 auto 10px; box-shadow:0 6px 14px var(--shadow);
+  }
+
+  .field{
+    width:100%; padding:11px 13px; border-radius:10px; border:1.5px solid var(--line);
+    font-size:14.5px; font-family:inherit; margin-bottom:10px; background:var(--surface-soft); color:var(--ink);
+  }
+  .field-label{font-size:13px; font-weight:700; color:var(--ink-soft); margin:0 2px 4px;}
+
+  .story-output{
+    font-size:17px; line-height:1.9; text-align:right; margin-top:8px;
+  }
+  .story-output b{color:var(--coral);}
+
+  footer.credit{
+    text-align:center; color:var(--surface); opacity:.5; font-size:11.5px; padding:6px 0 4px;
+  }
+  ::selection{background:var(--gold); color:#2b2318;}
+</style>
+</head>
+<body>
+
+<nav id="tabbar">
+  <button class="tab active" data-go="home"><span class="ic">🏠</span><span>בית</span></button>
+  <button class="tab" data-go="alias"><span class="ic">🎭</span><span>בלי להגיד</span></button>
+  <button class="tab" data-go="trivia"><span class="ic">🧠</span><span>טריוויה</span></button>
+  <button class="tab" data-go="cats"><span class="ic">📝</span><span>קטגוריות</span></button>
+  <button class="tab" data-go="never"><span class="ic">✋</span><span>מעולם לא</span></button>
+  <button class="tab" data-go="dare"><span class="ic">🎡</span><span>אמת/חובה</span></button>
+  <button class="tab" data-go="riddles"><span class="ic">🧩</span><span>חידות</span></button>
+  <button class="tab" data-go="dice"><span class="ic">🎲</span><span>אתגרים</span></button>
+  <button class="tab" data-go="madlib"><span class="ic">🖋️</span><span>סיפור משוגע</span></button>
+</nav>
+
+<div id="stage">
+
+  <!-- HOME -->
+  <div id="home" class="screen active">
+    <div class="screen-inner">
+      <h2 class="title">🎲 ערב משחקים משפחתי</h2>
+      <p class="sub">בחרו לשונית למעלה כדי לפתוח משחק. כל משחק נפתח על כל המסך</p>
+      <div class="panel">
+        <p style="margin:0 0 10px; font-weight:700;">מה יש כאן?</p>
+        <p style="margin:0 0 8px; color:var(--ink-soft); line-height:1.7;">
+          🎭 <b>בלי להגיד את המילה</b> — מסבירים מילה בלי להגיד אותה, נגד השעון<br>
+          🧠 <b>טריוויה</b> — שאלות ידע כללי לפי קטגוריות<br>
+          📝 <b>קטגוריות</b> — אות אקראית וקטגוריות לכתיבה על נייר<br>
+          ✋ <b>מעולם לא</b> — סבב היגדים משפחתי<br>
+          🎡 <b>אמת או חובה</b> — שאלות ומשימות קלילות<br>
+          🧩 <b>חידות</b> — חידות היגיון עם חשיפת תשובה<br>
+          🎲 <b>אתגרים</b> — אתגר אקראי קצר לכל אחד בתור<br>
+          🖋️ <b>סיפור משוגע</b> — כותבים מילים, מקבלים סיפור מטורף
+        </p>
+      </div>
+    </div>
+    <footer class="credit">שיחקו בהנאה — אין כאן ניקוד רשמי לוויכוחים 😉</footer>
+  </div>
+
+  <!-- ALIAS -->
+  <div id="alias" class="screen">
+    <div class="screen-inner" id="aliasSetupWrap">
+      <h2 class="title">🎭 בלי להגיד את המילה</h2>
+      <p class="sub">בחרו קטגוריות ומשך זמן, ואז העבירו את המכשיר למי שמסביר</p>
+      <div class="panel">
+        <p class="field-label">קטגוריות</p>
+        <div class="chiprow" id="aliasCats"></div>
+        <p class="field-label">משך סיבוב</p>
+        <div class="chiprow" id="aliasTime"></div>
+        <button class="btn primary block lg" id="aliasStart">▶ התחילו סיבוב</button>
+      </div>
+    </div>
+    <div class="screen-inner" id="aliasPlayWrap" style="display:none;">
+      <div class="timer" id="aliasTimer">60</div>
+      <div class="scoreline" id="aliasScoreline">0 נכונות</div>
+      <div class="big-word" id="aliasWord">מילה</div>
+      <div class="row-actions">
+        <button class="btn coral lg" id="aliasSkip">⏭ דילוג</button>
+        <button class="btn primary lg" id="aliasCorrect">✔ נכון</button>
+      </div>
+    </div>
+    <div class="screen-inner center" id="aliasEndWrap" style="display:none;">
+      <h2 class="title">⏱ הזמן נגמר!</h2>
+      <p class="sub" id="aliasEndScore"></p>
+      <div class="row-actions">
+        <button class="btn outline" id="aliasBackSetup">⚙ הגדרות</button>
+        <button class="btn primary" id="aliasAgain">סיבוב נוסף</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TRIVIA -->
+  <div id="trivia" class="screen">
+    <div class="screen-inner top-align" id="triviaSetupWrap">
+      <h2 class="title">🧠 טריוויה משפחתית</h2>
+      <p class="sub">בחרו קטגוריות ותתחילו סבב שאלות</p>
+      <div class="panel">
+        <p class="field-label">קטגוריות</p>
+        <div class="chiprow" id="triviaCats"></div>
+        <button class="btn primary block lg" id="triviaStartBtn">▶ התחילו</button>
+      </div>
+    </div>
+    <div class="screen-inner top-align" id="triviaPlayWrap" style="display:none;">
+      <p class="scoreline" id="triviaProgress" style="color:var(--surface); opacity:.85;"></p>
+      <div class="panel">
+        <h2 style="font-family:'Suez One',serif; font-size:20px; margin:0 0 14px; text-align:center;" id="triviaQ">שאלה</h2>
+        <div id="triviaOpts"></div>
+        <button class="btn primary block" id="triviaNext" disabled>הבא ←</button>
+      </div>
+    </div>
+    <div class="screen-inner center" id="triviaEndWrap" style="display:none;">
+      <h2 class="title">🏁 סיימתם!</h2>
+      <p class="sub" id="triviaEndScore"></p>
+      <div class="row-actions">
+        <button class="btn outline" id="triviaBackSetup">⚙ הגדרות</button>
+        <button class="btn primary" id="triviaAgain">סבב חדש</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- CATEGORIES -->
+  <div id="cats" class="screen">
+    <div class="screen-inner center" id="catsSetupWrap">
+      <h2 class="title">📝 קטגוריות אקראיות</h2>
+      <p class="sub">כל שחקן צריך נייר ועט. מגרילים אות וקטגוריות — כותבים מילה שמתחילה באות לכל קטגוריה</p>
+      <div class="panel">
+        <p class="field-label">כמות קטגוריות</p>
+        <div class="chiprow" id="catsCount"></div>
+        <p class="field-label">משך זמן</p>
+        <div class="chiprow" id="catsTime"></div>
+        <button class="btn primary block lg" id="catsStart">🎲 הגרילו</button>
+      </div>
+    </div>
+    <div class="screen-inner center" id="catsPlayWrap" style="display:none;">
+      <div class="letter-badge" id="catsLetter">א</div>
+      <div class="timer" id="catsTimer">60</div>
+      <ul class="cats-list" id="catsList"></ul>
+      <div class="row-actions">
+        <button class="btn outline" id="catsBackSetup">⚙ הגדרות</button>
+        <button class="btn primary" id="catsAgain">הגרלה חדשה</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- NEVER HAVE I EVER -->
+  <div id="never" class="screen">
+    <div class="screen-inner center">
+      <h2 class="title">✋ מעולם לא...</h2>
+      <p class="sub">כולם מרימים 5 אצבעות. מי שכן עשה — מוריד אצבע אחת</p>
+      <div class="panel">
+        <div class="big-word" id="neverText" style="font-size:22px;">לחצו "הבא" כדי להתחיל</div>
+        <button class="btn primary block lg" id="neverNext">הבא ←</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TRUTH OR DARE -->
+  <div id="dare" class="screen">
+    <div class="screen-inner center">
+      <h2 class="title">🎡 אמת או חובה</h2>
+      <div class="panel">
+        <p class="sub" id="dareSub" style="margin-bottom:14px;">בחרו אמת או חובה</p>
+        <div class="big-word" id="dareText" style="font-size:19px; min-height:2.6em;"></div>
+        <div class="row-actions">
+          <button class="btn wood lg" id="dareTruth">🗣 אמת</button>
+          <button class="btn coral lg" id="dareDare">🔥 חובה</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIDDLES -->
+  <div id="riddles" class="screen">
+    <div class="screen-inner center">
+      <h2 class="title">🧩 חידות</h2>
+      <p class="sub">קראו את החידה בקול, כל המשפחה מנסה לפתור</p>
+      <div class="panel">
+        <div class="big-word" id="riddleText" style="font-size:19px; min-height:3.4em;">לחצו "חידה חדשה" כדי להתחיל</div>
+        <div id="riddleAnswerBox" style="display:none; text-align:center; margin-bottom:14px;">
+          <p style="color:var(--ink-soft); font-size:13px; margin:0 0 2px;">התשובה:</p>
+          <p style="font-weight:800; font-size:18px; color:var(--coral); margin:0;" id="riddleAnswer"></p>
+        </div>
+        <div class="row-actions">
+          <button class="btn outline" id="riddleReveal">👁 חשפו תשובה</button>
+          <button class="btn primary" id="riddleNext">חידה חדשה</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CHALLENGE DICE -->
+  <div id="dice" class="screen">
+    <div class="screen-inner center">
+      <h2 class="title">🎲 אתגר אקראי</h2>
+      <p class="sub">מעבירים את המכשיר בתור, לוחצים ומבצעים את מה שיוצא</p>
+      <div class="panel">
+        <div class="big-word" id="diceText" style="font-size:20px; min-height:3.6em;">לחצו "הגרילו אתגר"</div>
+        <button class="btn primary block lg" id="diceNext">🎲 הגרילו אתגר</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAD LIB -->
+  <div id="madlib" class="screen">
+    <div class="screen-inner top-align" id="madlibForm">
+      <h2 class="title">🖋️ סיפור משוגע</h2>
+      <p class="sub">כל אחד מוסיף מילה בלי לדעת את הסיפור — בסוף קוראים בקול ובוכים מצחוק</p>
+      <div class="panel">
+        <p class="field-label">שם של בעל חיים</p>
+        <input class="field" id="ml_animal" placeholder="לדוגמה: תרנגול">
+        <p class="field-label">פועל (בעבר, כמו "רץ", "קפץ")</p>
+        <input class="field" id="ml_verb" placeholder="לדוגמה: רקד">
+        <p class="field-label">שם עצם</p>
+        <input class="field" id="ml_noun" placeholder="לדוגמה: מקרר">
+        <p class="field-label">תואר</p>
+        <input class="field" id="ml_adj" placeholder="לדוגמה: מבולגן">
+        <p class="field-label">שם של מקום</p>
+        <input class="field" id="ml_place" placeholder="לדוגמה: הסופר">
+        <p class="field-label">מספר</p>
+        <input class="field" id="ml_number" placeholder="לדוגמה: 7">
+        <p class="field-label">שם של בן משפחה שיושב איתכם</p>
+        <input class="field" id="ml_name" placeholder="לדוגמה: אמא">
+        <button class="btn primary block lg" id="madlibGenerate">✨ צרו סיפור</button>
+      </div>
+    </div>
+    <div class="screen-inner top-align" id="madlibResult" style="display:none;">
+      <h2 class="title">📖 הסיפור שלכם</h2>
+      <div class="panel">
+        <div class="story-output" id="madlibStory"></div>
+        <div class="row-actions">
+          <button class="btn outline" id="madlibBack">⬅ מילים חדשות</button>
+          <button class="btn primary" id="madlibShuffle">🔀 אותן מילים, סיפור אחר</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ---------- navigation ---------- */
+  function show(id){
+    document.querySelectorAll('.screen').forEach(function(s){ s.classList.remove('active'); });
+    document.getElementById(id).classList.add('active');
+    document.querySelectorAll('.tab').forEach(function(t){ t.classList.remove('active'); });
+    document.querySelector('.tab[data-go="'+id+'"]').classList.add('active');
+    document.getElementById('stage').scrollTop = 0;
+  }
+  document.querySelectorAll('.tab').forEach(function(t){
+    t.addEventListener('click', function(){ show(t.getAttribute('data-go')); });
+  });
+
+  function shuffle(arr){
+    var a = arr.slice();
+    for(var i=a.length-1;i>0;i--){
+      var j = Math.floor(Math.random()*(i+1));
+      var tmp=a[i]; a[i]=a[j]; a[j]=tmp;
+    }
+    return a;
+  }
+  function pick(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+
+  /* ================= ALIAS / CHARADES ================= */
+  var aliasWords = {
+    "קולנוע וסלב'ס": ["צ'רלי צ'פלין","הארי פוטר","באטמן","וונדר וומן","שרון סטון","שרוליק","מוגלי","קינג קונג","אליס בארץ הפלאות","פינוקיו","שרק","פיטר פן","רובין הוד","אלאדין","סינדרלה","שלגייה","ג'יימס בונד","אינדיאנה ג'ונס","יודה","ספיידרמן","הענק הירוק","פו הדוב","מיקי מאוס","הברווזון המכוער"],
+    "חיות": ["פיל","ג'ירפה","קנגורו","דולפין","נשר","קיפוד","עטלף","תוכי","זברה","קואלה","פינגווין","צב","נמלה","דבורה","סנאי","עכביש","אריה","נמר","תנין","חמור","סוס ים","קרנף","גמל","חתול בר"],
+    "מקצועות": ["רופא שיניים","טבח","שוטר","כבאי","מורה","נהג מונית","חקלאי","עורך דין","אדריכל","צלם","טייס","גנן","חשמלאי","רואה חשבון","שחקן","זמר","פסיכולוג","נגר","תופר","עיתונאי","מלצר","שוער בית","מדריך טיולים","וטרינר"],
+    "חפצים": ["מטרייה","משקפי שמש","מברשת שיניים","שעון יד","מקרר","אוזניות","מזוודה","כרית","מחשב נייד","טלפון סלולרי","מפתחות","נעליים","כובע","תיק גב","מצלמה","שואב אבק","מספריים","מחדד","מברג","מטריה הפוכה","סבון","מברשת שיער","עגיל","ארנק"],
+    "פעולות": ["לרקוד סלסה","לצחוק בקול רם","לנחור","לגלוש בגלשן","לצייר","לנגן בגיטרה","לקפוץ בחבל","לצלול","לטפס על הר","לאפות עוגה","לשחות","לדוג","לצלם סלפי","לנסוע באופניים","לישון","לקרוא ספר","להתגלח","לצחצח שיניים","לקפל כביסה","להתאמן בחדר כושר","לשטוף כלים","לגהץ","לנגן בתופים","לרכב על סוס"],
+    "מדינות ומקומות": ["צרפת","יפן","ברזיל","מצרים","איטליה","הודו","אוסטרליה","ספרד","תאילנד","הכותל המערבי","מגדל אייפל","הפירמידות","הקולוסיאום","חומת סין","סטטוי הליברטי","ים המלח","אילת","ירושלים","טיילת תל אביב","הר האש"],
+    "אוכל ומשקאות": ["פיצה","סושי","חומוס","פלאפל","שוקולד","גלידה","פסטה","המבורגר","קפה הפוך","לימונדה","עוגת שוקולד","סלט ירקות","מרק עוף","שווארמה","בורקס","קרואסון","פנקייק","גבינה צהובה","אבטיח","תה נענע"],
+    "ספורט": ["כדורגל","כדורסל","טניס","שחייה","ג'ודו","רכיבה על אופניים","גלישת רוח","התעמלות","ריצת מרתון","אגרוף","גולף","סקי","כדוריד","ספורט אתגרי","קפיצה במוט","הרמת משקולות"]
+  };
+  var aliasSelectedCats = Object.keys(aliasWords);
+  var aliasSeconds = 60;
+  var aliasTimerId = null;
+  var aliasPool = [];
+  var aliasScore = 0;
+
+  var aliasCatsBox = document.getElementById('aliasCats');
+  Object.keys(aliasWords).forEach(function(cat){
+    var chip = document.createElement('button');
+    chip.className = 'chip selected';
+    chip.textContent = cat;
+    chip.addEventListener('click', function(){
+      chip.classList.toggle('selected');
+      aliasSelectedCats = Array.from(aliasCatsBox.querySelectorAll('.chip.selected')).map(function(c){return c.textContent;});
+      if(aliasSelectedCats.length===0){ chip.classList.add('selected'); aliasSelectedCats=[cat]; }
+    });
+    aliasCatsBox.appendChild(chip);
+  });
+  var aliasTimeBox = document.getElementById('aliasTime');
+  [30,60,90].forEach(function(t,i){
+    var chip = document.createElement('button');
+    chip.className = 'chip' + (i===1?' selected':'');
+    chip.textContent = t + ' שנ׳';
+    chip.addEventListener('click', function(){
+      aliasTimeBox.querySelectorAll('.chip').forEach(function(c){c.classList.remove('selected');});
+      chip.classList.add('selected');
+      aliasSeconds = t;
+    });
+    aliasTimeBox.appendChild(chip);
+  });
+
+  function aliasBuildPool(){
+    var words = [];
+    aliasSelectedCats.forEach(function(cat){ words = words.concat(aliasWords[cat]); });
+    aliasPool = shuffle(words);
+  }
+  function aliasNextWord(){
+    if(aliasPool.length===0) aliasBuildPool();
+    document.getElementById('aliasWord').textContent = aliasPool.pop();
+  }
+  function aliasStartRound(){
+    aliasBuildPool();
+    aliasScore = 0;
+    document.getElementById('aliasSetupWrap').style.display='none';
+    document.getElementById('aliasEndWrap').style.display='none';
+    document.getElementById('aliasPlayWrap').style.display='flex';
+    document.getElementById('aliasScoreline').textContent = '0 נכונות';
+    aliasNextWord();
+    var remaining = aliasSeconds;
+    document.getElementById('aliasTimer').textContent = remaining;
+    clearInterval(aliasTimerId);
+    aliasTimerId = setInterval(function(){
+      remaining--;
+      document.getElementById('aliasTimer').textContent = remaining;
+      if(remaining<=0){
+        clearInterval(aliasTimerId);
+        aliasEndRound();
+      }
+    },1000);
+  }
+  function aliasEndRound(){
+    document.getElementById('aliasPlayWrap').style.display='none';
+    document.getElementById('aliasEndWrap').style.display='flex';
+    document.getElementById('aliasEndScore').textContent = 'ניחשתם נכון ' + aliasScore + ' מילים 🎉';
+  }
+  document.getElementById('aliasStart').addEventListener('click', aliasStartRound);
+  document.getElementById('aliasAgain').addEventListener('click', aliasStartRound);
+  document.getElementById('aliasBackSetup').addEventListener('click', function(){
+    document.getElementById('aliasEndWrap').style.display='none';
+    document.getElementById('aliasSetupWrap').style.display='flex';
+  });
+  document.getElementById('aliasCorrect').addEventListener('click', function(){
+    aliasScore++;
+    document.getElementById('aliasScoreline').textContent = aliasScore + ' נכונות';
+    aliasNextWord();
+  });
+  document.getElementById('aliasSkip').addEventListener('click', aliasNextWord);
+
+  /* ================= TRIVIA ================= */
+  var triviaBank = {
+    "כללי": [
+      {q:"כמה ימים יש בשנה מעוברת?", o:["365","364","366","360"], a:2},
+      {q:"מהו האוקיינוס הגדול בעולם?", o:["האטלנטי","ההודי","השקט","הארקטי"], a:2},
+      {q:"מהי היבשה הגדולה בעולם?", o:["אפריקה","אסיה","אירופה","דרום אמריקה"], a:1},
+      {q:"כמה צלעות יש למשולש?", o:["2","3","4","5"], a:1},
+      {q:"מהו הנהר הארוך בעולם?", o:["הנילוס","האמזונס","המיסיסיפי","הירדן"], a:0},
+      {q:"מי כתב את 'רומיאו ויוליה'?", o:["שייקספיר","דיקנס","טולסטוי","הומרוס"], a:0},
+      {q:"כמה חודשים יש בשנה?", o:["10","11","12","13"], a:2},
+      {q:"מהו הצבע שמתקבל מערבוב כחול וצהוב?", o:["ירוק","סגול","כתום","אפור"], a:0},
+      {q:"כמה צדדים יש לקוביה?", o:["4","6","8","10"], a:1},
+      {q:"מהי הבירה של יפן?", o:["אוסקה","קיוטו","טוקיו","יוקוהמה"], a:2}
+    ],
+    "תנ\"ך": [
+      {q:"מי היה המלך השלישי של ישראל המקראית?", o:["שאול","דוד","שלמה","רחבעם"], a:2},
+      {q:"מי כתב את התנ״ך לפי המסורת היהודית?", o:["חכמים בלבד","נביאים שונים בהשראה אלוהית","קיסר רומי","אין ידוע"], a:1},
+      {q:"כמה ימים לקח לבריאת העולם לפי התורה?", o:["3","6","7","10"], a:1},
+      {q:"מי בנה את התיבה?", o:["משה","נח","אברהם","יעקב"], a:1},
+      {q:"כמה מכות קיבל פרעה?", o:["7","8","10","12"], a:2},
+      {q:"מי הייתה אשתו הראשונה של יעקב?", o:["רחל","לאה","רבקה","שרה"], a:1},
+      {q:"מי הוביל את בני ישראל אחרי מות משה?", o:["יהושע","שמואל","דוד","גדעון"], a:0},
+      {q:"כמה בני יעקב היו?", o:["10","11","12","13"], a:2},
+      {q:"מי ניצח את גוליית?", o:["שאול","דוד","יהונתן","שמשון"], a:1},
+      {q:"מהו שמו של ההר שבו קיבל משה את הלוחות?", o:["הר הזיתים","הר סיני","הר הכרמל","הר תבור"], a:1}
+    ],
+    "ישראל": [
+      {q:"מהי בירת ישראל?", o:["תל אביב","ירושלים","חיפה","באר שבע"], a:1},
+      {q:"באיזו שנה הוקמה מדינת ישראל?", o:["1945","1948","1956","1967"], a:1},
+      {q:"מי היה הנשיא הראשון של מדינת ישראל?", o:["דוד בן גוריון","חיים ויצמן","יצחק בן צבי","זלמן שזר"], a:1},
+      {q:"מהי המטבע הרשמי של ישראל?", o:["דולר","שקל חדש","דינר","לירה"], a:1},
+      {q:"מהו הים הנמוך ביותר בעולם הגובל בישראל?", o:["ים המלח","הכנרת","הים התיכון","ים סוף"], a:0},
+      {q:"איזה חג יהודי חל בתשרי ופותח את השנה?", o:["פסח","ראש השנה","חנוכה","שבועות"], a:1},
+      {q:"מהי העיר הגדולה בצפון הארץ?", o:["חיפה","עפולה","נהריה","טבריה"], a:0},
+      {q:"מהו שמו של פרח הבר הלאומי של ישראל?", o:["כלנית","ורד","חמנית","סחלב"], a:0},
+      {q:"כמה ימי חג יש בפסח בישראל?", o:["5","6","7","8"], a:2},
+      {q:"מהי שפת האם הרשמית העיקרית בישראל?", o:["ערבית","עברית","אנגלית","רוסית"], a:1}
+    ],
+    "מדע וטבע": [
+      {q:"מהו איבר הגוף שאחראי על שאיבת דם?", o:["הריאה","הכבד","הלב","הכליה"], a:2},
+      {q:"מהו הגז שאנחנו נושמים כדי לחיות?", o:["פחמן דו חמצני","חמצן","חנקן","מימן"], a:1},
+      {q:"מהו הכוכב הקרוב ביותר לשמש?", o:["נוגה","כוכב חמה","כדור הארץ","מאדים"], a:1},
+      {q:"איזה כוכב לכת הכי גדול במערכת השמש?", o:["מאדים","צדק","שבתאי","נוגה"], a:1},
+      {q:"כמה עצמות יש בגוף אדם בוגר בערך?", o:["106","206","306","406"], a:1},
+      {q:"מי המציא את הנורה החשמלית?", o:["אלברט איינשטיין","תומאס אדיסון","ניקולה טסלה","בנג'מין פרנקלין"], a:1},
+      {q:"כמה זמן לוקח לכדור הארץ להקיף את השמש?", o:["יום אחד","חודש","שנה אחת","עשר שנים"], a:2},
+      {q:"מהו איבר הנשימה העיקרי של האדם?", o:["הלב","הריאות","הכבד","הקיבה"], a:1},
+      {q:"מהו הפרי שממנו מייצרים יין?", o:["תפוח","ענבים","תפוז","אגס"], a:1},
+      {q:"כמה חושים בסיסיים יש לאדם?", o:["3","4","5","6"], a:2}
+    ],
+    "ספורט ובידור": [
+      {q:"כמה שחקנים יש בקבוצת כדורגל במגרש?", o:["9","10","11","12"], a:2},
+      {q:"כל כמה שנים מתקיימים המשחקים האולימפיים?", o:["2","3","4","5"], a:2},
+      {q:"כמה מיתרים יש לגיטרה קלאסית?", o:["4","5","6","7"], a:2},
+      {q:"כמה שחקנים יש בקבוצת כדורסל במגרש?", o:["4","5","6","7"], a:1},
+      {q:"באיזה ענף ספורט משתמשים ברקטה וכדור צהוב קטן?", o:["טניס שולחן","טניס","סקווש","באדמינטון"], a:1},
+      {q:"מהו מספר השחקנים הכולל בקבוצת כדוריד במגרש?", o:["6","7","8","9"], a:1},
+      {q:"באיזה ספורט קיים 'המכה השלישית'?", o:["כדורעף","כדורסל","כדורגל","בייסבול"], a:0},
+      {q:"מהו הכלי המוזיקלי שיש לו 88 קלידים בדרך כלל?", o:["אקורדיון","פסנתר","עוגב","קלידים חשמליים"], a:1},
+      {q:"כמה סטים בדרך כלל צריך לנצח כדי לזכות במשחק טניס גברים בגראנד סלאם?", o:["2","3","4","5"], a:1},
+      {q:"מהו שמו של המשחק העולמי בו בועטים בכדור לשער?", o:["כדורסל","כדורגל","כדוריד","בייסבול"], a:1}
+    ]
+  };
+  var triviaCatsBox = document.getElementById('triviaCats');
+  var triviaSelectedCats = Object.keys(triviaBank);
+  Object.keys(triviaBank).forEach(function(cat){
+    var chip = document.createElement('button');
+    chip.className = 'chip selected';
+    chip.textContent = cat;
+    chip.addEventListener('click', function(){
+      chip.classList.toggle('selected');
+      triviaSelectedCats = Array.from(triviaCatsBox.querySelectorAll('.chip.selected')).map(function(c){return c.textContent;});
+      if(triviaSelectedCats.length===0){ chip.classList.add('selected'); triviaSelectedCats=[cat]; }
+    });
+    triviaCatsBox.appendChild(chip);
+  });
+
+  var triviaOrder = [], triviaIdx = 0, triviaScore = 0;
+  function triviaBuild(){
+    var qs = [];
+    triviaSelectedCats.forEach(function(cat){ qs = qs.concat(triviaBank[cat]); });
+    triviaOrder = shuffle(qs);
+  }
+  function triviaStart(){
+    triviaBuild();
+    triviaIdx = 0; triviaScore = 0;
+    document.getElementById('triviaSetupWrap').style.display='none';
+    document.getElementById('triviaEndWrap').style.display='none';
+    document.getElementById('triviaPlayWrap').style.display='flex';
+    triviaRender();
+  }
+  function triviaRender(){
+    if(triviaIdx >= triviaOrder.length){
+      document.getElementById('triviaPlayWrap').style.display='none';
+      document.getElementById('triviaEndWrap').style.display='flex';
+      document.getElementById('triviaEndScore').textContent = 'ענית נכון על ' + triviaScore + ' מתוך ' + triviaOrder.length + ' שאלות 🏆';
+      return;
+    }
+    var item = triviaOrder[triviaIdx];
+    document.getElementById('triviaProgress').textContent = (triviaIdx+1) + ' / ' + triviaOrder.length;
+    document.getElementById('triviaQ').textContent = item.q;
+    var optsBox = document.getElementById('triviaOpts');
+    optsBox.innerHTML = '';
+    document.getElementById('triviaNext').disabled = true;
+    item.o.forEach(function(opt, i){
+      var b = document.createElement('button');
+      b.className = 'qopt';
+      b.textContent = opt;
+      b.addEventListener('click', function(){
+        Array.from(optsBox.children).forEach(function(c,ci){
+          c.disabled = true;
+          if(ci===item.a) c.classList.add('correct');
+        });
+        if(i!==item.a) b.classList.add('wrong');
+        else triviaScore++;
+        document.getElementById('triviaNext').disabled = false;
+      });
+      optsBox.appendChild(b);
+    });
+  }
+  document.getElementById('triviaStartBtn').addEventListener('click', triviaStart);
+  document.getElementById('triviaNext').addEventListener('click', function(){ triviaIdx++; triviaRender(); });
+  document.getElementById('triviaAgain').addEventListener('click', triviaStart);
+  document.getElementById('triviaBackSetup').addEventListener('click', function(){
+    document.getElementById('triviaEndWrap').style.display='none';
+    document.getElementById('triviaSetupWrap').style.display='flex';
+  });
+
+  /* ================= CATEGORIES ================= */
+  var hebrewLetters = ['א','ב','ג','ד','ה','ו','ז','ח','ט','י','כ','ל','מ','נ','ס','ע','פ','צ','ק','ר','ש','ת'];
+  var categoryPool = ['שם של עיר','שם של חיה','מאכל','שם פרטי','סרט או סדרה','מקצוע','צבע','מותג מוכר','ענף ספורט','כלי בית','פרי או ירק','מדינה','זמר או להקה','דמות מצוירת','כלי רכב','משחק','חג','פרח או עץ','ספר','כלי נגינה','מזג אוויר','חפץ בבית ספר','שם משפחה','עיר בישראל','משקה','בגד או פריט לבוש','כלי מטבח','אתר תיירות','תבלין','חיה מהחווה','מקצוע רפואי','דמות מהתנ"ך','צורה גאומטרית','ריח או בושם'];
+  var catsSeconds = 60, catsCount = 7;
+  var catsTimerId = null;
+  var catsTimeBox = document.getElementById('catsTime');
+  [45,60,90].forEach(function(t,i){
+    var chip = document.createElement('button');
+    chip.className = 'chip' + (i===1?' selected':'');
+    chip.textContent = t + ' שנ׳';
+    chip.addEventListener('click', function(){
+      catsTimeBox.querySelectorAll('.chip').forEach(function(c){c.classList.remove('selected');});
+      chip.classList.add('selected');
+      catsSeconds = t;
+    });
+    catsTimeBox.appendChild(chip);
+  });
+  var catsCountBox = document.getElementById('catsCount');
+  [5,7,10].forEach(function(n,i){
+    var chip = document.createElement('button');
+    chip.className = 'chip' + (i===1?' selected':'');
+    chip.textContent = n + ' קטגוריות';
+    chip.addEventListener('click', function(){
+      catsCountBox.querySelectorAll('.chip').forEach(function(c){c.classList.remove('selected');});
+      chip.classList.add('selected');
+      catsCount = n;
+    });
+    catsCountBox.appendChild(chip);
+  });
+  function catsRoll(){
+    document.getElementById('catsSetupWrap').style.display='none';
+    document.getElementById('catsPlayWrap').style.display='flex';
+    document.getElementById('catsLetter').textContent = pick(hebrewLetters);
+    var chosen = shuffle(categoryPool).slice(0, catsCount);
+    var list = document.getElementById('catsList');
+    list.innerHTML = '';
+    chosen.forEach(function(c){
+      var li = document.createElement('li');
+      li.textContent = c;
+      list.appendChild(li);
+    });
+    var remaining = catsSeconds;
+    document.getElementById('catsTimer').textContent = remaining;
+    clearInterval(catsTimerId);
+    catsTimerId = setInterval(function(){
+      remaining--;
+      document.getElementById('catsTimer').textContent = Math.max(remaining,0);
+      if(remaining<=0) clearInterval(catsTimerId);
+    },1000);
+  }
+  document.getElementById('catsStart').addEventListener('click', catsRoll);
+  document.getElementById('catsAgain').addEventListener('click', catsRoll);
+  document.getElementById('catsBackSetup').addEventListener('click', function(){
+    clearInterval(catsTimerId);
+    document.getElementById('catsPlayWrap').style.display='none';
+    document.getElementById('catsSetupWrap').style.display='flex';
+  });
+
+  /* ================= NEVER HAVE I EVER ================= */
+  var neverBank = [
+    "מעולם לא נרדמתי בבית קולנוע","מעולם לא שכחתי יום הולדת של קרוב משפחה","מעולם לא בכיתי מצחוק עד כאב בטן",
+    "מעולם לא איחרתי בגלל שלא מצאתי חניה","מעולם לא אכלתי משהו שנפל לרצפה","מעולם לא התחפשתי למישהו ביום הולדת",
+    "מעולם לא שרתי בקריוקי מול קהל","מעולם לא נסעתי לכיוון ההפוך בטעות","מעולם לא הצטרפתי לריב שלא שייך אליי",
+    "מעולם לא בישלתי משהו שנשרף לגמרי","מעולם לא הלכתי לישון לפני 21:00 מרוב עייפות","מעולם לא קניתי משהו רק כי היה במבצע",
+    "מעולם לא צעקתי על מסך טלוויזיה בזמן משחק","מעולם לא שיקרתי כדי לא ללכת לאירוע","מעולם לא הלכתי לאיבוד בקניון",
+    "מעולם לא בכיתי בסוף סרט מצויר","מעולם לא שכחתי איפה חניתי את הרכב","מעולם לא נרדמתי בזמן שיחת טלפון",
+    "מעולם לא התווכחתי על הניווט באפליקציה","מעולם לא אכלתי גלידה ישר מהקופסה","מעולם לא שלחתי הודעה לאדם הלא נכון",
+    "מעולם לא צחקתי ברגע הלא מתאים","מעולם לא ויתרתי במשחק כי הפסדתי","מעולם לא חיפשתי משקפיים בזמן שהם על הראש",
+    "מעולם לא התחזיתי לישון כדי לא לעזור בבית","מעולם לא אכלתי ארוחה שלמה של חטיפים","מעולם לא שכחתי שם של מישהו שהכרתי הרגע",
+    "מעולם לא נפלתי מרוב צחוק","מעולם לא איחרתי לאירוע משפחתי","מעולם לא התחרטתי על תספורת",
+    "מעולם לא צילמתי סלפי יותר מ-10 פעמים לפני שיצאה טובה","מעולם לא ענתי לטלפון בטעות בלי לשים לב",
+    "מעולם לא הפלתי אוכל על הבגדים לפני אירוע","מעולם לא שיחקתי משחק מחשב עד השעות הקטנות",
+    "מעולם לא שכחתי לכבות תנור","מעולם לא התבלבלתי בין תאומים או אחים דומים",
+    "מעולם לא הרגשתי געגוע לבית ספר אחרי שסיימתי","מעולם לא קניתי בגד ולא לבשתי אותו אף פעם"
+  ];
+  var neverOrder = shuffle(neverBank), neverIdx = 0;
+  document.getElementById('neverNext').addEventListener('click', function(){
+    if(neverIdx >= neverOrder.length){ neverOrder = shuffle(neverBank); neverIdx = 0; }
+    document.getElementById('neverText').textContent = neverOrder[neverIdx++];
+  });
+
+  /* ================= TRUTH OR DARE ================= */
+  var truthBank = [
+    "מהו הדבר הכי מביך שקרה לך בבית ספר?","מה השקר הכי גדול שסיפרת להורים שלך?",
+    "על מה חלמת להיות כשתגדל/י ולמה זה לא קרה?","מהי ההרגל הכי מוזר שיש לך?",
+    "מי בחדר הכי דומה לך באופי?","מה הדבר האחרון שקנית ומצטער/ת עליו?",
+    "מה הפחד הכי מטופש שיש לך?","מהי הפעם האחרונה שהעמדת פנים שהכל בסדר?",
+    "אם היית יכול/ה לשנות דבר אחד בעבר, מה זה היה?","מה הדבר הכי מביך ששמור לך בטלפון?",
+    "מי מבני המשפחה היה הכי קשה להסתדר איתו כשהיית קטן/ה?","מה השיר שאת/ה מתבייש/ת שאת/ה אוהב/ת?",
+    "מהי התכונה שהכי היית רוצה לשפר בעצמך?","מה הדבר הכי מוזר שאכלת אי פעם?",
+    "מתי בפעם האחרונה בכית ולמה?","מה הכינוי המביך ביותר שקראו לך פעם?",
+    "אם היית יכול/ה להיות מפורסם/ת ביום אחד, על מה זה היה?","מהי השקרנות הקטנה שאת/ה עושה הכי הרבה?",
+    "מה הדבר שהכי מפחיד אותך בלילה?","מי האדם שהכי משפיע עליך בחיים ולמה?"
+  ];
+  var dareBank = [
+    "חקה/י בעל חיים במשך 30 שניות","דבר/י במבטא מצחיק עד הסיבוב הבא","עשה/י 10 קפיצות מנוף",
+    "שיר/י שורה מהשיר הישראלי האהוב עליך","תן/י מחמאה לכל אחד בשולחן","רקוד/י ריקוד קצר בלי מוזיקה",
+    "ספר/י בדיחה גרועה בכוונה","דבר/י כמו רובוט למשך דקה","עשה/י פרצוף מצחיק לתמונה",
+    "חקה/י את מי שיושב/ת לידך","ספר/י סיפור בן 3 משפטים על החדר הזה","תן/י חיזוי מטופש לשנה הבאה למישהו בשולחן",
+    "דבר/י בלי להשתמש באות א' למשך 30 שניות","עמוד/י על רגל אחת ותספור/י עד 20",
+    "תחקה/י שחקן כדורגל שמתאמן","תעשה/י את הקול הכי מצחיק שאת/ה יודע/ת",
+    "תספר/י בדיחה בלי לצחוק בעצמך","תגיד/י את שמך המלא לאחור",
+    "תעשה/י תנועת יוגה מצחיקה למשך 15 שניות","תדבר/י כמו חדשן/ית חדשות במשך דקה"
+  ];
+  document.getElementById('dareTruth').addEventListener('click', function(){
+    document.getElementById('dareSub').textContent = '🗣 אמת';
+    document.getElementById('dareText').textContent = pick(truthBank);
+  });
+  document.getElementById('dareDare').addEventListener('click', function(){
+    document.getElementById('dareSub').textContent = '🔥 חובה';
+    document.getElementById('dareText').textContent = pick(dareBank);
+  });
+
+  /* ================= RIDDLES ================= */
+  var riddleBank = [
+    {q:"מה הולך על ארבע בבוקר, על שתיים בצהריים ועל שלוש בערב?", a:"האדם (מדחף ברביים, הולך על שתיים, נעזר במקל בזקנה)"},
+    {q:"יש לי עיניים אך אינני רואה, יש לי לשון אך אינני מדבר. מה אני?", a:"נעל (עינית ולשון של נעל)"},
+    {q:"מה נשאר בקופסה גם כשלוקחים ממנה הכל?", a:"האור, אם מדליקים אותה"},
+    {q:"מה יש לך שיותר שאתה משתמש בו, פחות הוא נשאר?", a:"הסבלנות/כסף - אבל התשובה הקלאסית: מדרגה בסולם או... נר (ככל שדולק יותר, נשאר פחות)"},
+    {q:"איזו מילה הופכת קצרה יותר כשמוסיפים לה אותיות?", a:"המילה 'קצרה' עצמה"},
+    {q:"מה יורד אך אף פעם לא עולה?", a:"גשם"},
+    {q:"מה אפשר לשבור בלי לגעת בו?", a:"הבטחה"},
+    {q:"בעל בית אחד, בלי דלתות ובלי חלונות. מה זה?", a:"ביצה"},
+    {q:"מה הולך בלי רגליים ורץ בלי לזוז?", a:"שעון"},
+    {q:"מהו הדבר שכולם רוצים ואף אחד לא רוצה לקבל?", a:"עצה"},
+    {q:"מה יש לענן שאין לגשם?", a:"האות נ'"},
+    {q:"מה אפשר לתפוס אך אי אפשר לזרוק?", a:"הצטננות"},
+    {q:"מה נשבר כשאומרים את שמו?", a:"שקט"},
+    {q:"איזה חדר אין לו קירות?", a:"פטריה (חדר בפטרייה)"},
+    {q:"מה יש לו צוואר אך אין לו ראש?", a:"בקבוק"},
+    {q:"מה תמיד מגיע אבל אף פעם לא מגיע בפועל?", a:"מחר"},
+    {q:"מהו הדבר שככל שמייבשים אותו יותר, הוא נהיה רטוב יותר?", a:"מגבת"},
+    {q:"איזה כלב לעולם לא נובח?", a:"כלב ים"},
+    {q:"מה אפשר להחזיק ביד שמאל אך לא ביד ימין?", a:"היד הימנית"},
+    {q:"מה יש לו שיניים אך אינו נושך?", a:"מסרק"},
+    {q:"מה אפשר למלא בלי לגעת בו כלל?", a:"חדר (ממלאים אותו באור/רעש)"},
+    {q:"מהו הדבר שכשנותנים אותו, שומרים אותו?", a:"הבטחה"},
+    {q:"מה נכנס יבש ויוצא רטוב?", a:"תה (שקית תה)"},
+    {q:"מהו הדבר שיש לכולם, אבל אף אחד לא יכול לאבד אותו לתמיד?", a:"צל"}
+  ];
+  var riddleOrder = shuffle(riddleBank), riddleIdx = -1;
+  function riddleShowNext(){
+    riddleIdx++;
+    if(riddleIdx >= riddleOrder.length){ riddleOrder = shuffle(riddleBank); riddleIdx = 0; }
+    document.getElementById('riddleText').textContent = riddleOrder[riddleIdx].q;
+    document.getElementById('riddleAnswerBox').style.display = 'none';
+  }
+  document.getElementById('riddleNext').addEventListener('click', riddleShowNext);
+  document.getElementById('riddleReveal').addEventListener('click', function(){
+    if(riddleIdx < 0) return;
+    document.getElementById('riddleAnswer').textContent = riddleOrder[riddleIdx].a;
+    document.getElementById('riddleAnswerBox').style.display = 'block';
+  });
+
+  /* ================= CHALLENGE DICE ================= */
+  var diceBank = [
+    "תדבר/י באנגלית מדומיינת (ג'יבריש) במשך 20 שניות",
+    "תעשה/י 5 שכיבות סמיכה (או ניסיון כן)",
+    "תחזיק/י פרצוף רציני למשך 20 שניות בלי לצחוק",
+    "תגיד/י 3 דברים שאת/ה אסיר/ת תודה עליהם היום",
+    "תשיר/י 'יום הולדת שמח' בקול אופרה",
+    "תעשה/י חיקוי של מישהו מהמשפחה (בלי לפגוע)",
+    "תספר/י את הבדיחה הכי טובה שאת/ה מכיר/ה",
+    "תעמוד/י ותסתובב/י פעם אחת סביב עצמך ותנסה/י ללכת ישר",
+    "תן/י מחמאה אמיתית לאדם שיושב מימינך",
+    "תדבר/י כמו רובוט עד סוף הסיבוב הבא",
+    "תעשה/י את קריאת הינשוף/ בעל חיים אחר במשך 10 שניות",
+    "תספר/י זיכרון משפחתי מצחיק",
+    "תמצא/י חפץ בחדר ותמכור/י אותו ב'פרסומת' של 15 שניות",
+    "תעצום/י עיניים ותנסה/י לצייר חיה על נייר",
+    "תדמה/י שאת/ה שדרן/ית ספורט ותתאר/י מה קורה בחדר עכשיו",
+    "תגיד/י את הא-ב לאחור עד כמה שתצליח/י",
+    "תעשה/י תנועת ריקוד אחת ותלמד/י אותה לשכן/ה שלך בשולחן",
+    "תספר/י על החלום הכי מוזר שהיה לך",
+    "תגיד/י 5 מילים שמתחילות באות הראשונה של השם שלך",
+    "תעמוד/י על רגל אחת ותענה/י על שאלה של מישהו מהשולחן",
+    "תעשה/י פרצוף של כל אחד מהרגשות: שמח, עצוב, מופתע",
+    "תספר/י איזה סופר-כוח היית רוצה ולמה",
+    "תדבר/י בחריזה במשך 30 שניות",
+    "תגיד/י תודה למישהו בשולחן על משהו אמיתי",
+    "תעשה/י חיקוי קול של שדרן חדשות לרגע מהערב הזה",
+    "תמצא/י דרך מצחיקה להגיד 'שלום' בלי מילים",
+    "תספר/י מה היית עושה עם מיליון שקל",
+    "תעשה/י תנועת קונג פו איטית במשך 10 שניות",
+    "תגיד/י את שם המשפחה שלך תוך כדי שירה",
+    "תבחר/י מישהו בשולחן ותגיד/י תכונה טובה שלו"
+  ];
+  var diceOrder = shuffle(diceBank), diceIdx = -1;
+  document.getElementById('diceNext').addEventListener('click', function(){
+    diceIdx++;
+    if(diceIdx >= diceOrder.length){ diceOrder = shuffle(diceBank); diceIdx = 0; }
+    document.getElementById('diceText').textContent = diceOrder[diceIdx];
+  });
+
+  /* ================= MAD LIB ================= */
+  var madlibTemplates = [
+    function(w){ return "היה היה " + w.animal + " בשם " + w.name + " שגר ב" + w.place + ". יום אחד הוא " + w.verb + " ומצא " + w.noun + " " + w.adj + ". כולם ב" + w.place + " התכנסו לראות, וספרו שזה קרה " + w.number + " פעמים באותו שבוע. מאז, כל " + w.animal + " בסביבה רוצה " + w.noun + " משלו."; },
+    function(w){ return "בבוקר אחד " + w.name + " התעורר/ה, ולידו עמד " + w.animal + " " + w.adj + " שהחזיק " + w.noun + ". \"בוא נלך ל" + w.place + "\", אמר ה" + w.animal + ", ואז שניהם " + w.verb + " במשך " + w.number + " דקות עד שהגיעו."; },
+    function(w){ return "המתכון הסודי של " + w.name + " הוא: לוקחים " + w.noun + " " + w.adj + ", מוסיפים " + w.animal + " אחד קטן, " + w.verb + " חזק חזק, ואופים ב" + w.place + " למשך " + w.number + " דקות בדיוק. הטעם — פשוט בלתי נשכח."; },
+    function(w){ return "בחדשות הערב: " + w.animal + " " + w.adj + " נראה מסתובב ב" + w.place + " כשהוא נושא " + w.noun + ". עדים מספרים שהוא " + w.verb + " ברחוב מול " + w.number + " אנשים, ו" + w.name + " היה/הייתה הראשון/ה שצילם/ה את זה."; }
+  ];
+  var madlibLast = null, madlibTplIdx = 0;
+  function madlibCollect(){
+    return {
+      animal: document.getElementById('ml_animal').value.trim() || "תרנגול",
+      verb: document.getElementById('ml_verb').value.trim() || "רקד",
+      noun: document.getElementById('ml_noun').value.trim() || "מקרר",
+      adj: document.getElementById('ml_adj').value.trim() || "מבולגן",
+      place: document.getElementById('ml_place').value.trim() || "הסופר",
+      number: document.getElementById('ml_number').value.trim() || "7",
+      name: document.getElementById('ml_name').value.trim() || "אמא"
+    };
+  }
+  function madlibRender(){
+    var story = madlibTemplates[madlibTplIdx](madlibLast);
+    var esc = function(s){ return s.replace(/[&<>]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;'}[c]; }); };
+    Object.keys(madlibLast).forEach(function(k){
+      var v = madlibLast[k];
+      if(v) story = story.split(v).join('<b>'+esc(v)+'</b>');
+    });
+    document.getElementById('madlibStory').innerHTML = story;
+  }
+  document.getElementById('madlibGenerate').addEventListener('click', function(){
+    madlibLast = madlibCollect();
+    madlibTplIdx = Math.floor(Math.random()*madlibTemplates.length);
+    document.getElementById('madlibForm').style.display='none';
+    document.getElementById('madlibResult').style.display='flex';
+    madlibRender();
+  });
+  document.getElementById('madlibShuffle').addEventListener('click', function(){
+    var next = Math.floor(Math.random()*madlibTemplates.length);
+    if(madlibTemplates.length>1){ while(next===madlibTplIdx) next = Math.floor(Math.random()*madlibTemplates.length); }
+    madlibTplIdx = next;
+    madlibRender();
+  });
+  document.getElementById('madlibBack').addEventListener('click', function(){
+    document.getElementById('madlibResult').style.display='none';
+    document.getElementById('madlibForm').style.display='flex';
+  });
+
+  /* init trivia default bank so tab looks right even before Start */
+  triviaBuild();
+
+  /* ---------- PWA: service worker registration ---------- */
+  if('serviceWorker' in navigator){
+    window.addEventListener('load', function(){
+      navigator.serviceWorker.register('service-worker.js').catch(function(){});
+    });
+  }
+})();
+</script>
+</body>
+</html>
