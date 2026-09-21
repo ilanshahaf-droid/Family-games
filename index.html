@@ -67,44 +67,84 @@
     overflow:hidden;
   }
 
-  /* ---------- Tab bar ---------- */
-  #tabbar{
+  /* ---------- Top bar ---------- */
+  #topbar{
     display:flex;
-    overflow-x:auto;
-    -webkit-overflow-scrolling:touch;
-    gap:6px;
-    padding:calc(env(safe-area-inset-top,0px) + 12px) 12px 10px;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    padding:calc(env(safe-area-inset-top,0px) + 12px) 14px 12px;
     background:var(--navy);
     box-shadow:0 4px 14px rgba(0,0,0,.18);
     flex:0 0 auto;
-    scrollbar-width:none;
   }
-  #tabbar::-webkit-scrollbar{display:none;}
-  .tab{
-    flex:0 0 auto;
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    gap:3px;
-    padding:8px 14px;
-    border-radius:14px;
-    color:#eef1f6;
-    opacity:.72;
-    font-size:13px;
-    font-weight:700;
-    cursor:pointer;
-    border:none;
+  .topbtn{
     background:transparent;
-    white-space:nowrap;
+    border:none;
+    color:#eef1f6;
+    font-weight:700;
+    font-size:14px;
     font-family:inherit;
+    cursor:pointer;
+    padding:6px 4px;
+    white-space:nowrap;
+    flex:0 0 auto;
   }
-  .tab .ic{font-size:21px; line-height:1;}
-  .tab.active{
-    opacity:1;
-    background:var(--coral);
+  .topbtn.hidden{ visibility:hidden; }
+  #topTitle{
+    flex:1;
+    text-align:center;
     color:#fff;
+    font-weight:700;
+    font-size:15px;
+    font-family:'Suez One',serif;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
   }
-  .tab.active .ic{transform:scale(1.06);}
+
+  /* ---------- Category cards (home) ---------- */
+  .cat-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:14px;
+  }
+  @media (max-width:480px){ .cat-grid{ grid-template-columns:1fr; } }
+  .cat-card{
+    background:var(--bg-panel);
+    border-radius:18px;
+    padding:22px 16px;
+    box-shadow:0 8px 20px var(--shadow);
+    border:1px solid var(--line);
+    cursor:pointer;
+    text-align:center;
+    transition:transform .12s ease;
+  }
+  .cat-card:hover, .cat-card:active{ transform:translateY(-2px); }
+  .cat-card .cat-icon{font-size:40px; margin-bottom:8px; line-height:1;}
+  .cat-card h3{font-family:'Suez One',serif; font-size:19px; margin:4px 0; color:var(--navy);}
+  .cat-card p{font-size:13.5px; color:var(--ink-soft); margin:0 0 8px; line-height:1.4;}
+  .cat-card .cat-count{font-size:12.5px; font-weight:700; color:var(--coral);}
+
+  /* ---------- Game list (inside a category) ---------- */
+  .game-list{display:flex; flex-direction:column; gap:10px;}
+  .game-item{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    background:var(--bg-panel);
+    border-radius:14px;
+    padding:14px 16px;
+    box-shadow:0 6px 16px var(--shadow);
+    border:1px solid var(--line);
+    cursor:pointer;
+    text-align:right;
+  }
+  .game-item .gi-icon{font-size:27px; flex:0 0 auto;}
+  .game-item .gi-text{flex:1; min-width:0;}
+  .game-item .gi-text h4{margin:0 0 2px; font-size:15.5px; font-weight:700; color:var(--ink);}
+  .game-item .gi-text p{margin:0; font-size:13px; color:var(--ink-soft); line-height:1.4;}
+  .game-item .gi-arrow{font-size:20px; color:var(--ink-soft); flex:0 0 auto;}
 
   /* ---------- Screens ---------- */
   #stage{
@@ -235,19 +275,11 @@
 </head>
 <body>
 
-<nav id="tabbar">
-  <button class="tab active" data-go="home"><span class="ic">🏠</span><span>בית</span></button>
-  <button class="tab" data-go="alias"><span class="ic">🎭</span><span>בלי להגיד</span></button>
-  <button class="tab" data-go="trivia"><span class="ic">🧠</span><span>טריוויה</span></button>
-  <button class="tab" data-go="cats"><span class="ic">📝</span><span>קטגוריות</span></button>
-  <button class="tab" data-go="never"><span class="ic">✋</span><span>מעולם לא</span></button>
-  <button class="tab" data-go="dare"><span class="ic">🎡</span><span>אמת/חובה</span></button>
-  <button class="tab" data-go="riddles"><span class="ic">🧩</span><span>חידות</span></button>
-  <button class="tab" data-go="dice"><span class="ic">🎲</span><span>אתגרים</span></button>
-  <button class="tab" data-go="spy"><span class="ic">🕵️</span><span>מי המרגל</span></button>
-  <button class="tab" data-go="whoami"><span class="ic">🎩</span><span>מי אני</span></button>
-  <button class="tab" data-go="twotruths"><span class="ic">🤥</span><span>אמת ושקר</span></button>
-</nav>
+<header id="topbar">
+  <button class="topbtn hidden" id="btnBack">🔙 חזרה</button>
+  <span id="topTitle">בית</span>
+  <button class="topbtn" id="btnHome">🏠 בית</button>
+</header>
 
 <div id="stage">
 
@@ -255,24 +287,96 @@
   <div id="home" class="screen active">
     <div class="screen-inner">
       <h2 class="title">🎲 ערב משחקים משפחתי</h2>
-      <p class="sub">בחרו לשונית למעלה כדי לפתוח משחק. כל משחק נפתח על כל המסך</p>
-      <div class="panel">
-        <p style="margin:0 0 10px; font-weight:700;">מה יש כאן?</p>
-        <p style="margin:0 0 8px; color:var(--ink-soft); line-height:1.7;">
-          🎭 <b>בלי להגיד את המילה</b> — מסבירים מילה בלי להגיד אותה, נגד השעון<br>
-          🧠 <b>טריוויה</b> — שאלות ידע כללי לפי קטגוריות<br>
-          📝 <b>קטגוריות</b> — אות אקראית וקטגוריות לכתיבה על נייר<br>
-          ✋ <b>מעולם לא</b> — סבב היגדים משפחתי<br>
-          🎡 <b>אמת או חובה</b> — שאלות ומשימות קלילות<br>
-          🧩 <b>חידות</b> — חידות היגיון עם חשיפת תשובה<br>
-          🎲 <b>אתגרים</b> — אתגר אקראי קצר לכל אחד בתור<br>
-          🕵️ <b>מי המרגל</b> — כולם מקבלים מילה סודית, חוץ מהמרגל<br>
-          🎩 <b>מי אני</b> — מנחשים דמות בעזרת שאלות כן/לא<br>
-          🤥 <b>אמת ושקר</b> — נושא מפתיע לשלושה משפטים, שניים אמיתיים ואחד שקר
-        </p>
+      <p class="sub">בחרו קטגוריה, ואז משחק מתוכה. כל המשחקים משוחקים סביב טלפון אחד</p>
+      <div class="cat-grid">
+        <div class="cat-card navcard" data-go="cat-guess">
+          <div class="cat-icon">🎭</div>
+          <h3>משחקי ניחוש</h3>
+          <p>מנחשים מילים, דמויות ורעיונות בדרכים שונות</p>
+          <div class="cat-count">7 משחקים</div>
+        </div>
+        <div class="cat-card navcard" data-go="cat-knowledge">
+          <div class="cat-icon">🧠</div>
+          <h3>משחקי ידע</h3>
+          <p>שאלות, עובדות וחידות לכל המשפחה</p>
+          <div class="cat-count">3 משחקים</div>
+        </div>
+        <div class="cat-card navcard" data-go="cat-party">
+          <div class="cat-icon">🎉</div>
+          <h3>משחקי מסיבה וצחוקים</h3>
+          <p>אתגרים, טיימרים ורגעים מצחיקים</p>
+          <div class="cat-count">6 משחקים</div>
+        </div>
+        <div class="cat-card navcard" data-go="cat-personal">
+          <div class="cat-icon">👨‍👩‍👧‍👦</div>
+          <h3>משחקי משפחה ואישי</h3>
+          <p>מכירים אחד את השני קצת יותר טוב</p>
+          <div class="cat-count">5 משחקים</div>
+        </div>
       </div>
     </div>
-    <footer class="credit">שיחקו בהנאה — אין כאן ניקוד רשמי לוויכוחים 😉</footer>
+    <footer class="credit">שחקו בהנאה — אין כאן ניקוד רשמי לוויכוחים 😉</footer>
+  </div>
+
+  <!-- CATEGORY: GUESSING GAMES -->
+  <div id="cat-guess" class="screen">
+    <div class="screen-inner top-align">
+      <h2 class="title">🎭 משחקי ניחוש</h2>
+      <p class="sub">לחצו על משחק כדי לפתוח אותו</p>
+      <div class="game-list">
+        <div class="game-item navcard" data-go="alias"><span class="gi-icon">🎭</span><div class="gi-text"><h4>בלי להגיד את המילה</h4><p>מסבירים מילה בלי להגיד אותה, נגד השעון</p></div><span class="gi-arrow">‹</span></div>
+        <div class="game-item navcard" data-go="pantomime"><span class="gi-icon">🤐</span><div class="gi-text"><h4>פנטומימה</h4><p>מציגים בתנועות בלבד, בלי לדבר בכלל</p></div><span class="gi-arrow">‹</span></div>
+        <div class="game-item navcard" data-go="whoami"><span class="gi-icon">🎩</span><div class="gi-text"><h4>מי אני</h4><p>דמות מוצגת לכולם חוץ מהמנחש/ת, שמגלה אותה בשאלות כן/לא</p></div><span class="gi-arrow">‹</span></div>
+        <div class="game-item navcard" data-go="q20"><span class="gi-icon">🤫</span><div class="gi-text"><h4>20 שאלות</h4><p>רק מי שמחזיק/ה בטלפון יודע/ת את הסוד</p></div><span class="gi-arrow">‹</span></div>
+        <div class="game-item navcard" data-go="spy"><span class="gi-icon">🕵️</span><div class="gi-text"><h4>מי המרגל</h4><p>כולם מקבלים מילה סודית זהה, חוץ ממרגל אחד</p></div><span class="gi-arrow">‹</span></div>
+        <div class="game-item navcard" data-go="emoji"><span class="gi-icon">🦁</span><div class="gi-text"><h4>אימוג'י</h4><p>מפענחים סרט מתוך רצף אימוג'ים</p></div><span class="gi-arrow">‹</span></div>
+        <div class="game-item navcard" data-go="mimic"><span class="gi-icon">🎬</span><div class="gi-text"><h4>חיקוי משפחתי</h4><p>מחקים בן משפחה בלי לומר את שמו, והשאר מנחשים</p></div><span class="gi-arrow">‹</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CATEGORY: KNOWLEDGE GAMES -->
+  <div id="cat-knowledge" class="screen">
+    <div class="screen-inner top-align">
+      <h2 class="title">🧠 משחקי ידע</h2>
+      <p class="sub">לחצו על משחק כדי לפתוח אותו</p>
+      <div class="game-list">
+        <div class="game-item navcard" data-go="trivia"><span class="gi-icon">🧠</span><div class="gi-text"><h4>טריוויה</h4><p>שאלות ידע כללי לפי קטגוריות</p></div><span class="gi-arrow">‹</span></div>
+        <div class="game-item navcard" data-go="factfiction"><span class="gi-icon">🔍</span><div class="gi-text"><h4>עובדה או בדיה</h4><p>עובדה מוזרה או שקר גמור? מצביעים ומגלים</p></div><span class="gi-arrow">‹</span></div>
+        <div class="game-item navcard" data-go="riddles"><span class="gi-icon">🧩</span><div class="gi-text"><h4>חידות</h4><p>חידות היגיון עם כפתור לחשיפת התשובה</p></div><span class="gi-arrow">‹</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CATEGORY: PARTY GAMES -->
+  <div id="cat-party" class="screen">
+    <div class="screen-inner top-align">
+      <h2 class="title">🎉 משחקי מסיבה וצחוקים</h2>
+      <p class="sub">לחצו על משחק כדי לפתוח אותו</p>
+      <div class="game-list">
+        <div class="game-item navcard" data-go="dare"><span class="gi-icon">🎡</span><div class="gi-text"><h4>אמת או חובה</h4><p>שאלות ומשימות קלילות לבחירה</p></div><span class="gi-arrow">‹</span></div>
+        <div class="game-item navcard" data-go="never"><span class="gi-icon">✋</span><div class="gi-text"><h4>מעולם לא</h4><p>סבב היגדים משפחתי — מי עשה ומי לא</p></div><span class="gi-arrow">‹</span></div>
+        <div class="game-item navcard" data-go="dice"><span class="gi-icon">🎲</span><div class="gi-text"><h4>אתגר אקראי</h4><p>אתגר קצר לכל אחד בתור</p></div><span class="gi-arrow">‹</span></div>
+        <div class="game-item navcard" data-go="fivesec"><span class="gi-icon">⏱️</span><div class="gi-text"><h4>5 שניות</h4><p>משימה ורק 5 שניות לענות</p></div><span class="gi-arrow">‹</span></div>
+        <div class="game-item navcard" data-go="bomb"><span class="gi-icon">🧨</span><div class="gi-text"><h4>הפצצה המילולית</h4><p>שרשרת מילים וטיימר נסתר שמתפוצץ</p></div><span class="gi-arrow">‹</span></div>
+        <div class="game-item navcard" data-go="noyesno"><span class="gi-icon">🚫</span><div class="gi-text"><h4>בלי כן ולא</h4><p>מנסים לגרום למישהו לומר "כן" או "לא" תוך דקה</p></div><span class="gi-arrow">‹</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CATEGORY: PERSONAL / FAMILY GAMES -->
+  <div id="cat-personal" class="screen">
+    <div class="screen-inner top-align">
+      <h2 class="title">👨‍👩‍👧‍👦 משחקי משפחה ואישי</h2>
+      <p class="sub">לחצו על משחק כדי לפתוח אותו</p>
+      <div class="game-list">
+        <div class="game-item navcard" data-go="twotruths"><span class="gi-icon">🤥</span><div class="gi-text"><h4>שתי אמיתות ושקר</h4><p>נושא מפתיע לשלושה משפטים — שניים אמת ואחד שקר</p></div><span class="gi-arrow">‹</span></div>
+        <div class="game-item navcard" data-go="wouldrather"><span class="gi-icon">🤷</span><div class="gi-text"><h4>מה תעדיפו</h4><p>דילמות בין שתי אפשרויות — כל אחד בוחר צד</p></div><span class="gi-arrow">‹</span></div>
+        <div class="game-item navcard" data-go="knowme"><span class="gi-icon">👪</span><div class="gi-text"><h4>מי מכיר אותי הכי טוב</h4><p>שאלות אישיות על בני המשפחה</p></div><span class="gi-arrow">‹</span></div>
+        <div class="game-item navcard" data-go="cats"><span class="gi-icon">📝</span><div class="gi-text"><h4>קטגוריות אקראיות</h4><p>אות אקראית וקטגוריות לכתיבה על נייר</p></div><span class="gi-arrow">‹</span></div>
+        <div class="game-item navcard" data-go="story"><span class="gi-icon">📖</span><div class="gi-text"><h4>סיפור בהמשכים</h4><p>כל אחד מוסיף משפט, ובסוף קוראים סיפור משותף</p></div><span class="gi-arrow">‹</span></div>
+      </div>
+    </div>
   </div>
 
   <!-- ALIAS -->
@@ -484,6 +588,219 @@
     </div>
   </div>
 
+  <!-- 20 QUESTIONS -->
+  <div id="q20" class="screen">
+    <div class="screen-inner center" id="q20SetupWrap">
+      <h2 class="title">🤫 20 שאלות</h2>
+      <p class="sub">רק מי שמחזיק/ה במכשיר יודע/ת את הסוד. כולם אחרים שואלים שאלות כן/לא כדי לגלות מה זה, עד 20 שאלות</p>
+      <div class="panel">
+        <p class="field-label">קטגוריות</p>
+        <div class="chiprow" id="q20Cats"></div>
+        <button class="btn primary block lg" id="q20Start">▶ הגרילו סוד</button>
+      </div>
+    </div>
+    <div class="screen-inner center" id="q20PlayWrap" style="display:none;">
+      <div class="panel">
+        <div id="q20Hidden">
+          <p style="text-align:center; color:var(--ink-soft); margin:0 0 16px;">רק אתם אמורים לראות את זה — לחצו לחשוף</p>
+          <button class="btn primary block lg" id="q20Reveal">👁 חשפו את הסוד</button>
+        </div>
+        <div id="q20Shown" style="display:none;">
+          <div class="big-word" id="q20Word" style="font-size:26px;"></div>
+          <button class="btn outline block" id="q20New">🔄 סוד חדש</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PANTOMIME -->
+  <div id="pantomime" class="screen">
+    <div class="screen-inner" id="pantomimeSetupWrap">
+      <h2 class="title">🤐 פנטומימה</h2>
+      <p class="sub">בלי לדבר בכלל! מציגים בתנועות בלבד, מול השעון</p>
+      <div class="panel">
+        <p class="field-label">משך סיבוב</p>
+        <div class="chiprow" id="pantomimeTime"></div>
+        <button class="btn primary block lg" id="pantomimeStart">▶ התחילו סיבוב</button>
+      </div>
+    </div>
+    <div class="screen-inner" id="pantomimePlayWrap" style="display:none;">
+      <div class="timer" id="pantomimeTimer">60</div>
+      <div class="scoreline" id="pantomimeScoreline">0 נכונות</div>
+      <div class="big-word" id="pantomimeWord">מילה</div>
+      <div class="row-actions">
+        <button class="btn coral lg" id="pantomimeSkip">⏭ דילוג</button>
+        <button class="btn primary lg" id="pantomimeCorrect">✔ נכון</button>
+      </div>
+    </div>
+    <div class="screen-inner center" id="pantomimeEndWrap" style="display:none;">
+      <h2 class="title">⏱ הזמן נגמר!</h2>
+      <p class="sub" id="pantomimeEndScore"></p>
+      <div class="row-actions">
+        <button class="btn outline" id="pantomimeBackSetup">⚙ הגדרות</button>
+        <button class="btn primary" id="pantomimeAgain">סיבוב נוסף</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- FACT OR FICTION -->
+  <div id="factfiction" class="screen">
+    <div class="screen-inner center">
+      <h2 class="title">🔍 עובדה או בדיה</h2>
+      <p class="sub">קוראים את המשפט בקול, כולם מצביעים אמת או שקר, ואז חושפים את התשובה</p>
+      <div class="panel">
+        <div class="big-word" id="ffText" style="font-size:20px; min-height:3.4em;">לחצו "משפט חדש" כדי להתחיל</div>
+        <div id="ffAnswerBox" style="display:none; text-align:center; margin-bottom:14px;">
+          <p style="font-weight:800; font-size:19px; margin:0;" id="ffAnswer"></p>
+        </div>
+        <div class="row-actions">
+          <button class="btn outline" id="ffReveal">👁 חשפו תשובה</button>
+          <button class="btn primary" id="ffNext">משפט חדש</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- WOULD YOU RATHER -->
+  <div id="wouldrather" class="screen">
+    <div class="screen-inner center">
+      <h2 class="title">🤷 מה תעדיפו?</h2>
+      <p class="sub">כל אחד בוחר צד ומסביר למה — אין תשובה נכונה, רק דיונים משפחתיים סוערים</p>
+      <div class="panel">
+        <div class="big-word" id="wrText" style="font-size:21px; min-height:3.6em;">לחצו "דילמה הבאה" כדי להתחיל</div>
+        <button class="btn primary block lg" id="wrNext">🎲 דילמה הבאה</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 5 SECOND RULE -->
+  <div id="fivesec" class="screen">
+    <div class="screen-inner center" id="fiveSetupWrap">
+      <h2 class="title">⏱️ אתגר 5 שניות</h2>
+      <p class="sub">מקבלים משימה, ויש רק 5 שניות לענות עליה בקול!</p>
+      <div class="panel">
+        <button class="btn primary block lg" id="fiveStart">▶ קבלו משימה</button>
+      </div>
+    </div>
+    <div class="screen-inner center" id="fivePlayWrap" style="display:none;">
+      <div class="panel">
+        <div class="big-word" id="fiveText" style="font-size:20px; min-height:3.4em;"></div>
+        <div class="timer" id="fiveTimer">5</div>
+        <button class="btn primary block lg" id="fiveNext" style="margin-top:10px;">משימה הבאה</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- WORD BOMB -->
+  <div id="bomb" class="screen">
+    <div class="screen-inner center" id="bombSetupWrap">
+      <h2 class="title">🧨 הפצצה המילולית</h2>
+      <p class="sub">מעבירים את הטלפון מיד ליד. כל שחקן אומר בקול מילה שקשורה למילה הקודמת — לפני שהפצצה מתפוצצת! אף אחד לא יודע מתי זה יקרה</p>
+      <div class="panel">
+        <button class="btn primary block lg" id="bombStart">🧨 הציתו את הפתיל</button>
+      </div>
+    </div>
+    <div class="screen-inner center" id="bombPlayWrap" style="display:none;">
+      <div class="panel">
+        <p class="sub" style="margin-bottom:6px;">מילת פתיחה:</p>
+        <div class="big-word" id="bombWord" style="font-size:30px;"></div>
+        <div class="big-word" id="bombPulse" style="font-size:44px; margin-top:6px;">🧨</div>
+        <button class="btn outline block" id="bombStop">✋ עצרו את הפצצה עכשיו</button>
+      </div>
+    </div>
+    <div class="screen-inner center" id="bombEndWrap" style="display:none;">
+      <h2 class="title" id="bombEndTitle">💥 בום!</h2>
+      <p class="sub">מי שהחזיק/ה בטלפון ברגע הפיצוץ יוצא/ת החוצה (או מקבל/ת נקודת חובה)</p>
+      <button class="btn primary lg" id="bombAgain">🧨 סיבוב נוסף</button>
+    </div>
+  <!-- KNOW ME BEST -->
+  <div id="knowme" class="screen">
+    <div class="screen-inner center">
+      <h2 class="title">👪 מי מכיר אותי הכי טוב</h2>
+      <p class="sub">כולם כותבים/אומרים תשובה, ואז בן המשפחה שנשאל עליו חושף את התשובה האמיתית — נקודה למי שצדק</p>
+      <div class="panel">
+        <p class="field-label">שמות בני המשפחה (לא חובה, מופרדים בפסיקים)</p>
+        <input class="field" id="knowmeNames" placeholder="לדוגמה: אבא, אמא, נועה">
+        <div class="big-word" id="knowmeText" style="font-size:20px; min-height:3.4em;">לחצו "שאלה הבאה" כדי להתחיל</div>
+        <button class="btn primary block lg" id="knowmeNext">שאלה הבאה ←</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ROUND ROBIN STORY -->
+  <div id="story" class="screen">
+    <div class="screen-inner top-align" id="storySetupWrap">
+      <h2 class="title">📖 סיפור בהמשכים</h2>
+      <p class="sub">כל אחד מוסיף משפט אחד בתורו, בלי לראות לאן זה הולך — בסוף מקריאים את כל הסיפור</p>
+      <div class="panel">
+        <button class="btn primary block lg" id="storyStart">✨ התחילו סיפור</button>
+      </div>
+    </div>
+    <div class="screen-inner top-align" id="storyPlayWrap" style="display:none;">
+      <div class="panel">
+        <div class="story-output" id="storyText"></div>
+        <input class="field" id="storyInput" placeholder="הוסיפו את המשפט הבא..." style="margin-top:14px;">
+        <button class="btn primary block" id="storyAdd">➕ הוסיפו לסיפור</button>
+        <button class="btn outline block" id="storyRestart" style="margin-top:10px;">🔄 סיפור חדש</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- EMOJI PUZZLE -->
+  <div id="emoji" class="screen">
+    <div class="screen-inner center">
+      <h2 class="title">🦁 אימוג'י</h2>
+      <p class="sub">מה הסרט שמסתתר מאחורי האימוג'ים?</p>
+      <div class="panel">
+        <div class="big-word" id="emojiPuzzle" style="font-size:48px; min-height:1.6em;">לחצו "הבא"</div>
+        <div id="emojiAnswerBox" style="display:none; text-align:center; margin-bottom:10px;">
+          <p style="font-weight:800; font-size:19px; color:var(--coral); margin:0;" id="emojiAnswer"></p>
+        </div>
+        <div class="row-actions">
+          <button class="btn outline" id="emojiReveal">👁 חשפו תשובה</button>
+          <button class="btn primary" id="emojiNext">הבא</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- NO YES OR NO -->
+  <div id="noyesno" class="screen">
+    <div class="screen-inner center" id="noyesnoSetupWrap">
+      <h2 class="title">🚫 בלי כן ולא</h2>
+      <p class="sub">שחקן אחד עונה על שאלות מכל השולחן במשך דקה — בלי לומר "כן" או "לא" ולו פעם אחת</p>
+      <div class="panel">
+        <button class="btn primary block lg" id="noyesnoStart">▶ התחילו סבב</button>
+      </div>
+    </div>
+    <div class="screen-inner center" id="noyesnoPlayWrap" style="display:none;">
+      <div class="panel">
+        <p class="sub" style="margin-bottom:6px;">נושא לשאלות:</p>
+        <div class="big-word" id="noyesnoTopic" style="font-size:22px;"></div>
+        <div class="timer" id="noyesnoTimer">60</div>
+        <button class="btn coral block lg" id="noyesnoCaught">❌ אמר/ה כן/לא — נתפס/ה!</button>
+      </div>
+    </div>
+    <div class="screen-inner center" id="noyesnoEndWrap" style="display:none;">
+      <h2 class="title" id="noyesnoEndTitle"></h2>
+      <button class="btn primary lg" id="noyesnoAgain">סבב נוסף</button>
+    </div>
+  </div>
+
+  <!-- FAMILY MIMIC -->
+  <div id="mimic" class="screen">
+    <div class="screen-inner center">
+      <h2 class="title">🎬 חיקוי משפחתי</h2>
+      <p class="sub">מחקים בלי לומר את השם — השאר מנחשים את מי מחקים</p>
+      <div class="panel">
+        <p class="field-label">שמות בני המשפחה (לא חובה, מופרדים בפסיקים)</p>
+        <input class="field" id="mimicNames" placeholder="לדוגמה: אבא, אמא, נועה">
+        <div class="big-word" id="mimicText" style="font-size:21px; min-height:3em;">לחצו "אתגר הבא" כדי להתחיל</div>
+        <button class="btn primary block lg" id="mimicNext">אתגר הבא ←</button>
+      </div>
+    </div>
+  </div>
+
 </div>
 
 <script>
@@ -491,15 +808,39 @@
   "use strict";
 
   /* ---------- navigation ---------- */
-  function show(id){
+  var screenTitles = {
+    'home':'בית',
+    'cat-guess':'משחקי ניחוש','cat-knowledge':'משחקי ידע','cat-party':'משחקי מסיבה וצחוקים','cat-personal':'משחקי משפחה ואישי',
+    'alias':'בלי להגיד את המילה','pantomime':'פנטומימה','whoami':'מי אני','q20':'20 שאלות','spy':'מי המרגל','emoji':'אימוג\'י','mimic':'חיקוי משפחתי',
+    'trivia':'טריוויה','factfiction':'עובדה או בדיה','riddles':'חידות',
+    'dare':'אמת או חובה','never':'מעולם לא','dice':'אתגר אקראי','fivesec':'5 שניות','bomb':'הפצצה המילולית','noyesno':'בלי כן ולא',
+    'twotruths':'שתי אמיתות ושקר','wouldrather':'מה תעדיפו','knowme':'מי מכיר אותי הכי טוב','cats':'קטגוריות אקראיות','story':'סיפור בהמשכים'
+  };
+  var navStack = ['home'];
+  function renderScreen(id){
     document.querySelectorAll('.screen').forEach(function(s){ s.classList.remove('active'); });
     document.getElementById(id).classList.add('active');
-    document.querySelectorAll('.tab').forEach(function(t){ t.classList.remove('active'); });
-    document.querySelector('.tab[data-go="'+id+'"]').classList.add('active');
+    document.getElementById('topTitle').textContent = screenTitles[id] || '';
+    document.getElementById('btnBack').classList.toggle('hidden', id === 'home');
     document.getElementById('stage').scrollTop = 0;
   }
-  document.querySelectorAll('.tab').forEach(function(t){
-    t.addEventListener('click', function(){ show(t.getAttribute('data-go')); });
+  function navigateTo(id){
+    navStack.push(id);
+    renderScreen(id);
+  }
+  function navigateBack(){
+    if(navStack.length > 1){
+      navStack.pop();
+      renderScreen(navStack[navStack.length-1]);
+    }
+  }
+  document.getElementById('btnHome').addEventListener('click', function(){
+    navStack = ['home'];
+    renderScreen('home');
+  });
+  document.getElementById('btnBack').addEventListener('click', navigateBack);
+  document.querySelectorAll('.navcard').forEach(function(card){
+    card.addEventListener('click', function(){ navigateTo(card.getAttribute('data-go')); });
   });
 
   function shuffle(arr){
@@ -1125,6 +1466,422 @@
     twotruthsIdx++;
     if(twotruthsIdx >= twotruthsOrder.length){ twotruthsOrder = shuffle(twotruthsBank); twotruthsIdx = 0; }
     document.getElementById('twotruthsText').textContent = twotruthsOrder[twotruthsIdx];
+  });
+
+  /* ================= 20 QUESTIONS ================= */
+  var q20Bank = {
+    "מקצועות וחיות": aliasWords["מקצועות"].concat(aliasWords["חיות"]),
+    "חפצים ומדינות": aliasWords["חפצים"].concat(aliasWords["מדינות ומקומות"]),
+    "מפורסמים ודמויות": aliasWords["קולנוע וסלב'ס"].concat(aliasWords["דמויות מהתנ\"ך"])
+  };
+  var q20SelectedCats = Object.keys(q20Bank);
+  var q20Pool = [];
+  var q20CatsBox = document.getElementById('q20Cats');
+  Object.keys(q20Bank).forEach(function(cat){
+    var chip = document.createElement('button');
+    chip.className = 'chip selected';
+    chip.textContent = cat;
+    chip.addEventListener('click', function(){
+      chip.classList.toggle('selected');
+      q20SelectedCats = Array.from(q20CatsBox.querySelectorAll('.chip.selected')).map(function(c){return c.textContent;});
+      if(q20SelectedCats.length===0){ chip.classList.add('selected'); q20SelectedCats=[cat]; }
+    });
+    q20CatsBox.appendChild(chip);
+  });
+  function q20Build(){
+    var words = [];
+    q20SelectedCats.forEach(function(cat){ words = words.concat(q20Bank[cat]); });
+    q20Pool = shuffle(words);
+  }
+  function q20Draw(){
+    if(q20Pool.length===0) q20Build();
+    document.getElementById('q20Word').textContent = q20Pool.pop();
+    document.getElementById('q20Hidden').style.display='block';
+    document.getElementById('q20Shown').style.display='none';
+  }
+  document.getElementById('q20Start').addEventListener('click', function(){
+    q20Build();
+    document.getElementById('q20SetupWrap').style.display='none';
+    document.getElementById('q20PlayWrap').style.display='flex';
+    q20Draw();
+  });
+  document.getElementById('q20Reveal').addEventListener('click', function(){
+    document.getElementById('q20Hidden').style.display='none';
+    document.getElementById('q20Shown').style.display='block';
+  });
+  document.getElementById('q20New').addEventListener('click', q20Draw);
+
+  /* ================= PANTOMIME ================= */
+  var pantomimeWords = [
+    "לצחצח שיניים","לגלוש בים","לטגן ביצה","לנגן בפסנתר","לרכוב על סוס","לצייר על קיר","לקפוץ במקום",
+    "לישון ולנחור","לקפוץ בבאנג'י","לטפס על סולם","להחליק על קרח","לשחות בבריכה","לזרוק כדור לסל",
+    "לבשל מרק","לגזור שיער","לרקוד ברייקדנס","להרים משקולת כבדה","לצלם בפולארויד","לחתוך עוגה",
+    "להתגלגל במורד גבעה","לפתוח מתנה","לדוג דג ענק","להתלבש בבהילות","לתפור כפתור","לחפור בור",
+    "להיות רובוט מתקלקל","להיות שופט כדורגל","להיות טייס במטוס","להיות זמר ראפ על במה",
+    "להיות ליצן בקרקס","להיות מלצר עמוס בצלחות","להיות שוטר עוצר תנועה","להיות דוגמן/ית בתצוגת אופנה",
+    "להיות דינוזאור רעב","להיות רוח רפאים","להיות סופרמן טס","להיות אריה שואג","להיות פינגווין הולך",
+    "להיות ננס ישן","להיות מכשפה מכינה שיקוי","להיות אביר נלחם בחרב"
+  ];
+  var pantomimeSeconds = 60, pantomimeTimerId = null, pantomimePool = [], pantomimeScore = 0;
+  var pantomimeTimeBox = document.getElementById('pantomimeTime');
+  [30,60,90].forEach(function(t,i){
+    var chip = document.createElement('button');
+    chip.className = 'chip' + (i===1?' selected':'');
+    chip.textContent = t + ' שנ׳';
+    chip.addEventListener('click', function(){
+      pantomimeTimeBox.querySelectorAll('.chip').forEach(function(c){c.classList.remove('selected');});
+      chip.classList.add('selected');
+      pantomimeSeconds = t;
+    });
+    pantomimeTimeBox.appendChild(chip);
+  });
+  function pantomimeNextWord(){
+    if(pantomimePool.length===0) pantomimePool = shuffle(pantomimeWords);
+    document.getElementById('pantomimeWord').textContent = pantomimePool.pop();
+  }
+  function pantomimeStartRound(){
+    pantomimePool = shuffle(pantomimeWords);
+    pantomimeScore = 0;
+    document.getElementById('pantomimeSetupWrap').style.display='none';
+    document.getElementById('pantomimeEndWrap').style.display='none';
+    document.getElementById('pantomimePlayWrap').style.display='flex';
+    document.getElementById('pantomimeScoreline').textContent = '0 נכונות';
+    pantomimeNextWord();
+    var remaining = pantomimeSeconds;
+    document.getElementById('pantomimeTimer').textContent = remaining;
+    clearInterval(pantomimeTimerId);
+    pantomimeTimerId = setInterval(function(){
+      remaining--;
+      document.getElementById('pantomimeTimer').textContent = remaining;
+      if(remaining<=0){
+        clearInterval(pantomimeTimerId);
+        document.getElementById('pantomimePlayWrap').style.display='none';
+        document.getElementById('pantomimeEndWrap').style.display='flex';
+        document.getElementById('pantomimeEndScore').textContent = 'ניחשתם נכון ' + pantomimeScore + ' פעולות 🎉';
+      }
+    },1000);
+  }
+  document.getElementById('pantomimeStart').addEventListener('click', pantomimeStartRound);
+  document.getElementById('pantomimeAgain').addEventListener('click', pantomimeStartRound);
+  document.getElementById('pantomimeBackSetup').addEventListener('click', function(){
+    document.getElementById('pantomimeEndWrap').style.display='none';
+    document.getElementById('pantomimeSetupWrap').style.display='flex';
+  });
+  document.getElementById('pantomimeCorrect').addEventListener('click', function(){
+    pantomimeScore++;
+    document.getElementById('pantomimeScoreline').textContent = pantomimeScore + ' נכונות';
+    pantomimeNextWord();
+  });
+  document.getElementById('pantomimeSkip').addEventListener('click', pantomimeNextWord);
+
+  /* ================= FACT OR FICTION ================= */
+  var ffBank = [
+    {s:"לתמנון יש שלושה לבבות", t:true},
+    {s:"בננות גדלות על עצים", t:false},
+    {s:"אריה הוא מלך החיות באמת מבחינה מדעית", t:false},
+    {s:"הלב האנושי בגודל אגרוף בערך", t:true},
+    {s:"הדבש כמעט ולא מתקלקל לעולם", t:true},
+    {s:"ג'ירפות ישנות בעמידה רוב הזמן", t:true},
+    {s:"אפשר לראות את חומת סין מהחלל בעין בלתי מזוינת", t:false},
+    {s:"לתנין יש יותר שיניים מלאדם", t:true},
+    {s:"עכברים אוהבים גבינה יותר מכל מזון אחר", t:false},
+    {s:"כוכב הלכת נוגה הוא החם ביותר במערכת השמש", t:true},
+    {s:"ציפורי יען יכולות לרוץ מהר יותר מסוסים", t:true},
+    {s:"קרנפים הם צמחוניים", t:true},
+    {s:"ליטר מים שוקל בדיוק קילוגרם אחד", t:true},
+    {s:"נמלים ישנות בלילה כמו בני אדם", t:false},
+    {s:"הלימון מכיל יותר סוכר מהתפוז", t:false},
+    {s:"אדם יכול לחיות זמן ארוך יותר בלי שינה מאשר בלי מים", t:false},
+    {s:"פרות בעלות חברות טובות שהן מעדיפות", t:true},
+    {s:"ציפורי קולברי יכולות לעוף אחורה", t:true},
+    {s:"קופסת שימורים לא מתקלקלת אף פעם", t:false},
+    {s:"רוב הדינוזאורים חיו לפני יותר מ-60 מיליון שנה", t:true},
+    {s:"עורבים מסוגלים לזהות פרצופים של בני אדם", t:true},
+    {s:"כרישים חייבים לשחות כל הזמן כדי לנשום", t:false},
+    {s:"פלים הם היונקים היחידים שלא יכולים לקפוץ", t:true},
+    {s:"הצבע הכי נפוץ לעיניים בעולם הוא כחול", t:false}
+  ];
+  var ffOrder = shuffle(ffBank), ffIdx = -1;
+  function ffShowNext(){
+    ffIdx++;
+    if(ffIdx >= ffOrder.length){ ffOrder = shuffle(ffBank); ffIdx = 0; }
+    document.getElementById('ffText').textContent = ffOrder[ffIdx].s;
+    document.getElementById('ffAnswerBox').style.display = 'none';
+  }
+  document.getElementById('ffNext').addEventListener('click', ffShowNext);
+  document.getElementById('ffReveal').addEventListener('click', function(){
+    if(ffIdx < 0) return;
+    var item = ffOrder[ffIdx];
+    var box = document.getElementById('ffAnswer');
+    box.textContent = item.t ? '✅ עובדה אמיתית!' : '❌ זו בדיה!';
+    box.style.color = item.t ? 'var(--ok-ink)' : 'var(--bad-ink)';
+    document.getElementById('ffAnswerBox').style.display = 'block';
+  });
+
+  /* ================= WOULD YOU RATHER ================= */
+  var wrBank = [
+    "לגור שנה בלי טלוויזיה — או שנה בלי טלפון?",
+    "לטוס לחלל — או לצלול לעומק האוקיינוס?",
+    "לדעת לדבר בכל שפות העולם — או לדעת לנגן בכל כלי נגינה?",
+    "לאכול רק פיצה כל החיים — או רק גלידה כל החיים?",
+    "להיות תמיד 10 דקות באיחור — או תמיד שעה מוקדם מדי?",
+    "לקרוא מחשבות — או לראות עתיד?",
+    "לגור בבית באמצע היער — או בדירה באמצע העיר הכי סואנת?",
+    "לוותר על מתוק לכל החיים — או לוותר על מלוח לכל החיים?",
+    "להיות הכי חכם/ה בחדר — או הכי מצחיק/ה בחדר?",
+    "לנסוע לעבר — או לנסוע לעתיד?",
+    "להיות ענק/ית בגובה 3 מטר — או קטנ/ה בגובה 30 ס\"מ?",
+    "לאבד את חוש הריח — או את חוש הטעם?",
+    "לחיות בלי מוזיקה — או בלי סרטים וסדרות?",
+    "לנצח במיליון שקל אבל לא לספר לאף אחד — או לנצח ב-100 אלף ולספר לכולם?",
+    "להיות מפורסם/ת אבל בלי פרטיות — או אלמוני/ת אבל חופשי/ה לגמרי?",
+    "לדעת בדיוק מתי תמות — או איך תמות?",
+    "לחיות בלי אינטרנט לשבוע — או בלי מזגן בקיץ הישראלי?",
+    "לוותר על שעה שינה כל יום — או לוותר על שעה מסכים כל יום?",
+    "להיות מסוגל/ת לעוף — או להיות בלתי נראה/ית?",
+    "לאכול תמיד אוכל קר — או תמיד אוכל חם מדי?",
+    "לגור על חוף ים — או על פסגת הר?",
+    "לדעת לרפא כל מחלה — או לדעת לדבר עם בעלי חיים?",
+    "להיות תמיד הראשון/ה בתור — או תמיד לקבל את המושב הכי נוח?",
+    "לחיות בלי ריבים משפחתיים — או בלי חשבונות לשלם?"
+  ];
+  var wrOrder = shuffle(wrBank), wrIdx = -1;
+  document.getElementById('wrNext').addEventListener('click', function(){
+    wrIdx++;
+    if(wrIdx >= wrOrder.length){ wrOrder = shuffle(wrBank); wrIdx = 0; }
+    document.getElementById('wrText').textContent = wrOrder[wrIdx];
+  });
+
+  /* ================= 5 SECOND RULE ================= */
+  var fiveBank = [
+    "תגיד/י 3 חיות שמתחילות באות כ'",
+    "תגיד/י 3 סוגי פיצה",
+    "תגיד/י 3 ערים בישראל",
+    "תגיד/י 3 דמויות מסרטי אנימציה",
+    "תגיד/י 3 מאכלים חמים",
+    "תגיד/י 3 מקצועות שדורשים מדים",
+    "תגיד/י 3 דברים שיש במקרר",
+    "תגיד/י 3 שמות של חברים או קרובי משפחה",
+    "תגיד/י 3 דברים שאתה לוקח לטיול",
+    "תגיד/י 3 צבעים של פרחים",
+    "תגיד/י 3 דברים עגולים",
+    "תגיד/י 3 סרטים או סדרות",
+    "תגיד/י 3 ענפי ספורט",
+    "תגיד/י 3 דברים שמפחידים ילדים",
+    "תגיד/י 3 מדינות באירופה",
+    "תגיד/י 3 מאכלים מתוקים",
+    "תגיד/י 3 כלי נגינה",
+    "תגיד/י 3 בעלי מקצוע שעובדים בלילה",
+    "תגיד/י 3 דברים שקונים בסופר",
+    "תגיד/י 3 חפצים שיש בחדר שינה",
+    "תגיד/י 3 שמות של חיות מחמד נפוצות",
+    "תגיד/י 3 דברים שעשויים מעץ",
+    "תגיד/י 3 בירות של מדינות",
+    "תגיד/י 3 דברים שיש בתיק בית ספר"
+  ];
+  var fiveOrder = shuffle(fiveBank), fiveIdx = -1, fiveTimerId = null;
+  function fiveShow(){
+    fiveIdx++;
+    if(fiveIdx >= fiveOrder.length){ fiveOrder = shuffle(fiveBank); fiveIdx = 0; }
+    document.getElementById('fiveText').textContent = fiveOrder[fiveIdx];
+    var remaining = 5;
+    document.getElementById('fiveTimer').textContent = remaining;
+    clearInterval(fiveTimerId);
+    fiveTimerId = setInterval(function(){
+      remaining--;
+      document.getElementById('fiveTimer').textContent = Math.max(remaining,0);
+      if(remaining<=0) clearInterval(fiveTimerId);
+    },1000);
+  }
+  document.getElementById('fiveStart').addEventListener('click', function(){
+    document.getElementById('fiveSetupWrap').style.display='none';
+    document.getElementById('fivePlayWrap').style.display='flex';
+    fiveShow();
+  });
+  document.getElementById('fiveNext').addEventListener('click', fiveShow);
+
+  /* ================= WORD BOMB ================= */
+  var bombStarters = [
+    "כלב","ים","שוקולד","מטוס","גיטרה","קיץ","ספר","גשם","כוכב","פיצה",
+    "אופניים","מחשב","הר","נהר","פרח","מוזיקה","חלום","נעל","שולחן","מפתח"
+  ];
+  var bombTimeoutId = null, bombTicking = false;
+  document.getElementById('bombStart').addEventListener('click', function(){
+    document.getElementById('bombSetupWrap').style.display='none';
+    document.getElementById('bombEndWrap').style.display='none';
+    document.getElementById('bombPlayWrap').style.display='flex';
+    document.getElementById('bombWord').textContent = pick(bombStarters);
+    var pulse = document.getElementById('bombPulse');
+    pulse.style.animation = 'none';
+    bombTicking = true;
+    var delayMs = (20 + Math.random()*30) * 1000; /* 20–50s of suspense */
+    clearTimeout(bombTimeoutId);
+    bombTimeoutId = setTimeout(function(){
+      if(!bombTicking) return;
+      bombTicking = false;
+      document.getElementById('bombPlayWrap').style.display='none';
+      document.getElementById('bombEndWrap').style.display='flex';
+    }, delayMs);
+  });
+  document.getElementById('bombStop').addEventListener('click', function(){
+    bombTicking = false;
+    clearTimeout(bombTimeoutId);
+    document.getElementById('bombPlayWrap').style.display='none';
+    document.getElementById('bombSetupWrap').style.display='flex';
+  });
+  document.getElementById('bombAgain').addEventListener('click', function(){
+    document.getElementById('bombEndWrap').style.display='none';
+    document.getElementById('bombStart').click();
+  });
+
+  /* ================= KNOW ME BEST ================= */
+  var knowmeTemplates = [
+    "מה המאכל האהוב על ___?","מה הצבע האהוב על ___?","מה התחביב של ___?","לאן ___ הכי רוצה לטוס?",
+    "מה השיר האהוב על ___?","מה ___ הכי אוהב/ת לעשות בזמן פנוי?","על איזה מקצוע ___ חלם/ה כילד/ה?",
+    "מהי החיה האהובה על ___?","מהו הסרט האהוב על ___?","מהו הפחד הכי גדול של ___?",
+    "מה ___ הכי לא אוהב/ת לאכול?","מהי העונה האהובה על ___?","מה ___ היה/הייתה עושה עם יום חופש מושלם?",
+    "מהו החלום הכי גדול של ___?","איזה סוג מוזיקה ___ הכי אוהב/ת?","מה הדבר שהכי מצחיק את ___?",
+    "מהי התכונה הכי בולטת של ___?","במה ___ הכי גאה/ה?","לאיזו תקופה בהיסטוריה ___ היה/הייתה רוצה לנסוע?",
+    "מהו המשקה האהוב על ___?","מה ___ עושה כשהוא/היא לחוץ/ה?","מהי המסורת המשפחתית האהובה על ___?",
+    "איזה על-כוח ___ היה/הייתה רוצה?","מה הכי מרגיע את ___?"
+  ];
+  var knowmeNamesInput = document.getElementById('knowmeNames');
+  var knowmeOrder = shuffle(knowmeTemplates), knowmeIdx = -1;
+  document.getElementById('knowmeNext').addEventListener('click', function(){
+    knowmeIdx++;
+    if(knowmeIdx >= knowmeOrder.length){ knowmeOrder = shuffle(knowmeTemplates); knowmeIdx = 0; }
+    var names = knowmeNamesInput.value.split(',').map(function(n){return n.trim();}).filter(Boolean);
+    var who = names.length>0 ? pick(names) : 'אחד מבני המשפחה';
+    document.getElementById('knowmeText').textContent = knowmeOrder[knowmeIdx].split('___').join(who);
+  });
+
+  /* ================= ROUND ROBIN STORY ================= */
+  var storyOpeners = [
+    "כשפתחנו את הדלת גילינו שהבית שלנו נעלם...",
+    "זה התחיל כיום רגיל, עד שהטלפון שלי צלצל בשעה 3 בלילה...",
+    "אף אחד לא האמין לי כשסיפרתי שראיתי תרנגול מדבר בחצר...",
+    "הפעם האחרונה שראינו את הכלב שלנו, הוא רץ ישר לתוך היער...",
+    "כשפתחנו את הקופסה הישנה בעליית הגג, מצאנו בפנים מפה עתיקה...",
+    "המורה נכנסה לכיתה והכריזה שהיום לא יהיה כמו כל יום אחר...",
+    "בדיוק כשחשבתי שהיום לא יכול להיות יותר מוזר, המקרר התחיל לדבר...",
+    "הגענו לחוף הים ומצאנו שם בקבוק עם פתק בפנים...",
+    "בבוקר גילינו שכל השעונים בבית עצרו באותה שנייה...",
+    "סבתא סיפרה לנו סוד ששמרה במשך 50 שנה...",
+    "הלכנו לאיבוד בקניון, ואז שמענו קול מוכר קורא לנו משום מקום...",
+    "יום אחד, כל התמונות במסדרון התחילו לזוז..."
+  ];
+  var storyLines = [];
+  function storyReset(){
+    storyLines = [pick(storyOpeners)];
+    document.getElementById('storyText').innerHTML = '<b>' + storyLines[0] + '</b>';
+    document.getElementById('storyInput').value = '';
+  }
+  document.getElementById('storyStart').addEventListener('click', function(){
+    document.getElementById('storySetupWrap').style.display='none';
+    document.getElementById('storyPlayWrap').style.display='flex';
+    storyReset();
+  });
+  document.getElementById('storyAdd').addEventListener('click', function(){
+    var input = document.getElementById('storyInput');
+    var val = input.value.trim();
+    if(!val) return;
+    storyLines.push(val);
+    document.getElementById('storyText').innerHTML = '<b>' + storyLines[0] + '</b> ' + storyLines.slice(1).join(' ');
+    input.value = '';
+    input.focus();
+  });
+  document.getElementById('storyRestart').addEventListener('click', storyReset);
+
+  /* ================= EMOJI PUZZLE ================= */
+  var emojiBank = [
+    {e:"🦁👑", a:"מלך האריות"},
+    {e:"🚢🧊", a:"טיטאניק"},
+    {e:"🕷️🧑", a:"ספיידרמן"},
+    {e:"🧙‍♂️💍", a:"שר הטבעות"},
+    {e:"🐠🔍", a:"מחפשים את נמו"},
+    {e:"🦖🏝️", a:"פארק היורה"},
+    {e:"👻🚫", a:"לוכדי רוחות"},
+    {e:"🤖❤️", a:"וול-אי"},
+    {e:"🏠🎈", a:"למעלה"},
+    {e:"🦇🧑", a:"באטמן"},
+    {e:"🍫🏭", a:"צ'רלי ומפעל השוקולד"},
+    {e:"⚔️🌌", a:"מלחמת הכוכבים"},
+    {e:"👹🟢", a:"שרק"},
+    {e:"🕰️🚗⚡", a:"בחזרה לעתיד"},
+    {e:"🐼🥋", a:"קונג פו פנדה"},
+    {e:"🦸‍♂️🌍", a:"סופרמן"},
+    {e:"🐘🎪", a:"דמבו"},
+    {e:"🚗💨🔴", a:"קארס"},
+    {e:"⚡🧑‍🦲👓", a:"הארי פוטר"},
+    {e:"❄️👭", a:"פרוזן"}
+  ];
+  var emojiOrder = shuffle(emojiBank), emojiIdx = -1;
+  function emojiShowNext(){
+    emojiIdx++;
+    if(emojiIdx >= emojiOrder.length){ emojiOrder = shuffle(emojiBank); emojiIdx = 0; }
+    document.getElementById('emojiPuzzle').textContent = emojiOrder[emojiIdx].e;
+    document.getElementById('emojiAnswerBox').style.display = 'none';
+  }
+  document.getElementById('emojiNext').addEventListener('click', emojiShowNext);
+  document.getElementById('emojiReveal').addEventListener('click', function(){
+    if(emojiIdx < 0) return;
+    document.getElementById('emojiAnswer').textContent = emojiOrder[emojiIdx].a;
+    document.getElementById('emojiAnswerBox').style.display = 'block';
+  });
+
+  /* ================= NO YES OR NO ================= */
+  var noyesnoTopics = [
+    "היום שלך אתמול","התוכניות שלך לקיץ","האוכל האהוב עליך","החיה שהכי מפחידה אותך",
+    "הזיכרון הכי ישן שלך","התחביב שלך","הסרט האחרון שראית","היום הראשון בעבודה או בבית ספר",
+    "הטיול האחרון שלך","החבר/ה הכי טוב/ה שלך","המתנה הכי טובה שקיבלת","התוכנית לסוף השבוע",
+    "הישג שאתה גאה בו","הפחד הכי גדול שלך","הבוקר שלך היום","המקום שהיית רוצה לגור בו",
+    "השיר האהוב עליך","הארוחה האחרונה שאכלת","החלום מהלילה שעבר","היום המושלם שלך"
+  ];
+  var noyesnoTimerId = null;
+  function noyesnoStartRound(){
+    document.getElementById('noyesnoSetupWrap').style.display='none';
+    document.getElementById('noyesnoEndWrap').style.display='none';
+    document.getElementById('noyesnoPlayWrap').style.display='flex';
+    document.getElementById('noyesnoTopic').textContent = pick(noyesnoTopics);
+    var remaining = 60;
+    document.getElementById('noyesnoTimer').textContent = remaining;
+    clearInterval(noyesnoTimerId);
+    noyesnoTimerId = setInterval(function(){
+      remaining--;
+      document.getElementById('noyesnoTimer').textContent = remaining;
+      if(remaining<=0){
+        clearInterval(noyesnoTimerId);
+        noyesnoEnd('🎉 שרד/תה בלי לומר כן או לא!');
+      }
+    },1000);
+  }
+  function noyesnoEnd(msg){
+    document.getElementById('noyesnoPlayWrap').style.display='none';
+    document.getElementById('noyesnoEndWrap').style.display='flex';
+    document.getElementById('noyesnoEndTitle').textContent = msg;
+  }
+  document.getElementById('noyesnoStart').addEventListener('click', noyesnoStartRound);
+  document.getElementById('noyesnoCaught').addEventListener('click', function(){
+    clearInterval(noyesnoTimerId);
+    noyesnoEnd('😅 נתפס/ה!');
+  });
+  document.getElementById('noyesnoAgain').addEventListener('click', noyesnoStartRound);
+
+  /* ================= FAMILY MIMIC ================= */
+  var mimicTemplates = [
+    "חקו איך ___ מדבר/ת בטלפון","חקו איך ___ מגיב/ה כשהוא/היא רעב/ה","חקו איך ___ צוחק/ת",
+    "חקו איך ___ מתעורר/ת בבוקר","חקו איך ___ נוהג/ת ברכב","חקו איך ___ מגיב/ה לבשורה טובה",
+    "חקו איך ___ אוכל/ת ארוחת ערב","חקו איך ___ מדבר/ת כשהוא/היא עייף/ה","חקו איך ___ מתלונן/ת",
+    "חקו איך ___ מריע/ה לקבוצת ספורט","חקו איך ___ מתרגש/ת ממתנה","חקו איך ___ מחפש/ת משהו שאיבד/ה"
+  ];
+  var mimicNamesInput = document.getElementById('mimicNames');
+  var mimicOrder = shuffle(mimicTemplates), mimicIdx = -1;
+  document.getElementById('mimicNext').addEventListener('click', function(){
+    mimicIdx++;
+    if(mimicIdx >= mimicOrder.length){ mimicOrder = shuffle(mimicTemplates); mimicIdx = 0; }
+    var names = mimicNamesInput.value.split(',').map(function(n){return n.trim();}).filter(Boolean);
+    var who = names.length>0 ? pick(names) : 'מישהו מבני המשפחה';
+    document.getElementById('mimicText').textContent = mimicOrder[mimicIdx].split('___').join(who);
   });
 
   /* init trivia default bank so tab looks right even before Start */
