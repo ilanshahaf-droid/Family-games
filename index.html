@@ -293,13 +293,13 @@
           <div class="cat-icon">🎭</div>
           <h3>משחקי ניחוש</h3>
           <p>מנחשים מילים, דמויות ורעיונות בדרכים שונות</p>
-          <div class="cat-count">7 משחקים</div>
+          <div class="cat-count">8 משחקים</div>
         </div>
         <div class="cat-card navcard" data-go="cat-knowledge">
           <div class="cat-icon">🧠</div>
           <h3>משחקי ידע</h3>
           <p>שאלות, עובדות וחידות לכל המשפחה</p>
-          <div class="cat-count">3 משחקים</div>
+          <div class="cat-count">4 משחקים</div>
         </div>
         <div class="cat-card navcard" data-go="cat-party">
           <div class="cat-icon">🎉</div>
@@ -331,6 +331,7 @@
         <div class="game-item navcard" data-go="spy"><span class="gi-icon">🕵️</span><div class="gi-text"><h4>מי המרגל</h4><p>כולם מקבלים מילה סודית זהה, חוץ ממרגל אחד</p></div><span class="gi-arrow">‹</span></div>
         <div class="game-item navcard" data-go="emoji"><span class="gi-icon">🦁</span><div class="gi-text"><h4>אימוג'י</h4><p>מפענחים סרט מתוך רצף אימוג'ים</p></div><span class="gi-arrow">‹</span></div>
         <div class="game-item navcard" data-go="mimic"><span class="gi-icon">🎬</span><div class="gi-text"><h4>חיקוי משפחתי</h4><p>מחקים בן משפחה בלי לומר את שמו, והשאר מנחשים</p></div><span class="gi-arrow">‹</span></div>
+        <div class="game-item navcard" data-go="agents"><span class="gi-icon">🕴️</span><div class="gi-text"><h4>סוכנים כפולים</h4><p>לכל שחקן תפקיד סודי — נאמן או סוכן כפול. דיון, חשד והצבעה בסוף</p></div><span class="gi-arrow">‹</span></div>
       </div>
     </div>
   </div>
@@ -344,6 +345,7 @@
         <div class="game-item navcard" data-go="trivia"><span class="gi-icon">🧠</span><div class="gi-text"><h4>טריוויה</h4><p>שאלות ידע כללי לפי קטגוריות</p></div><span class="gi-arrow">‹</span></div>
         <div class="game-item navcard" data-go="factfiction"><span class="gi-icon">🔍</span><div class="gi-text"><h4>עובדה או בדיה</h4><p>עובדה מוזרה או שקר גמור? מצביעים ומגלים</p></div><span class="gi-arrow">‹</span></div>
         <div class="game-item navcard" data-go="riddles"><span class="gi-icon">🧩</span><div class="gi-text"><h4>חידות</h4><p>חידות היגיון עם כפתור לחשיפת התשובה</p></div><span class="gi-arrow">‹</span></div>
+        <div class="game-item navcard" data-go="bluffword"><span class="gi-icon">🃏</span><div class="gi-text"><h4>שאלת הבלוף</h4><p>מילה אמיתית, הגדרות מומצאות — מי יגלה את האמת?</p></div><span class="gi-arrow">‹</span></div>
       </div>
     </div>
   </div>
@@ -803,6 +805,84 @@
     </div>
   </div>
 
+  <!-- DOUBLE AGENTS -->
+  <div id="agents" class="screen">
+    <div class="screen-inner center" id="agentsSetupWrap">
+      <h2 class="title">🕴️ סוכנים כפולים</h2>
+      <p class="sub">לכל שחקן תפקיד סודי: נאמן לשירות, או סוכן כפול. הנאמנים צריכים לגלות מי הסוכנים — הסוכנים צריכים לשרוד בלי להתגלות</p>
+      <div class="panel">
+        <p class="field-label">כמה שחקנים?</p>
+        <div class="chiprow" id="agentsCount"></div>
+        <button class="btn primary block lg" id="agentsStart">🎬 התחילו משחק</button>
+      </div>
+    </div>
+    <div class="screen-inner center" id="agentsRevealWrap" style="display:none;">
+      <p class="sub" id="agentsPlayerLabel">תור שחקן 1</p>
+      <div class="panel">
+        <div id="agentsHidden">
+          <p style="text-align:center; color:var(--ink-soft); margin:0 0 16px;">מכשיר בידי השחקן? לחצו לחשוף רק לעצמכם</p>
+          <button class="btn primary block lg" id="agentsReveal">👁 חשפו את התפקיד שלי</button>
+        </div>
+        <div id="agentsShown" style="display:none;">
+          <div class="big-word" id="agentsRoleText" style="font-size:21px;"></div>
+          <button class="btn primary block lg" id="agentsNextPlayer">מכסים ומעבירים הלאה →</button>
+        </div>
+      </div>
+    </div>
+    <div class="screen-inner center" id="agentsDiscussWrap" style="display:none;">
+      <h2 class="title">🔎 כולם ראו את התפקיד!</h2>
+      <p class="sub">דונו יחד כשתי דקות על מי לדעתכם הסוכן/ים הכפולים, ואז עברו להצבעה</p>
+      <div class="panel">
+        <button class="btn primary block lg" id="agentsToVote">🗳️ עברו להצבעה</button>
+      </div>
+    </div>
+    <div class="screen-inner center" id="agentsVoteWrap" style="display:none;">
+      <h2 class="title">🗳️ את מי עוצרים?</h2>
+      <p class="sub">הצביעו יחד בקול, ואז לחצו על מספר השחקן שנבחר</p>
+      <div class="panel">
+        <div class="chiprow" id="agentsVoteButtons"></div>
+      </div>
+    </div>
+    <div class="screen-inner center" id="agentsEndWrap" style="display:none;">
+      <h2 class="title" id="agentsEndTitle"></h2>
+      <p class="sub" id="agentsEndSub"></p>
+      <div class="row-actions">
+        <button class="btn outline" id="agentsBackSetup">⚙ הגדרות</button>
+        <button class="btn primary" id="agentsAgain">משחק חדש</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- BLUFF WORD -->
+  <div id="bluffword" class="screen">
+    <div class="screen-inner center" id="bluffSetupWrap">
+      <h2 class="title">🃏 שאלת הבלוף</h2>
+      <p class="sub">מציגים מילה אמיתית. כל שחקן ממציא הגדרה משכנעת (אך שקרית) עבורה. בסוף, כולם מנסים לגלות מה ההגדרה האמיתית</p>
+      <div class="panel">
+        <p class="field-label">כמה שחקנים ממציאים הגדרה?</p>
+        <div class="chiprow" id="bluffCount"></div>
+        <button class="btn primary block lg" id="bluffStart">▶ התחילו</button>
+      </div>
+    </div>
+    <div class="screen-inner center" id="bluffCollectWrap" style="display:none;">
+      <p class="sub" style="margin-bottom:4px;">המילה:</p>
+      <div class="big-word" id="bluffWord" style="font-size:34px;"></div>
+      <div class="panel">
+        <p class="sub" id="bluffPlayerLabel" style="margin-bottom:10px;">תור שחקן 1</p>
+        <input class="field" id="bluffInput" placeholder="הקלידו הגדרה משכנעת (אך שגויה)...">
+        <button class="btn primary block lg" id="bluffSubmit">שלחו הגדרה →</button>
+      </div>
+    </div>
+    <div class="screen-inner top-align" id="bluffRevealWrap" style="display:none;">
+      <h2 class="title">🤔 מה ההגדרה האמיתית?</h2>
+      <p class="sub">דונו יחד, ואז לחצו על ההגדרה שלדעתכם נכונה</p>
+      <div class="panel">
+        <div id="bluffOpts"></div>
+        <button class="btn primary block" id="bluffNextWord" style="margin-top:10px;">מילה חדשה →</button>
+      </div>
+    </div>
+  </div>
+
 </div>
 
 <script>
@@ -813,8 +893,8 @@
   var screenTitles = {
     'home':'בית',
     'cat-guess':'משחקי ניחוש','cat-knowledge':'משחקי ידע','cat-party':'משחקי מסיבה וצחוקים','cat-personal':'משחקי משפחה ואישי',
-    'alias':'בלי להגיד את המילה','pantomime':'פנטומימה','whoami':'מי אני','q20':'20 שאלות','spy':'מי המרגל','emoji':'אימוג\'י','mimic':'חיקוי משפחתי',
-    'trivia':'טריוויה','factfiction':'עובדה או בדיה','riddles':'חידות',
+    'alias':'בלי להגיד את המילה','pantomime':'פנטומימה','whoami':'מי אני','q20':'20 שאלות','spy':'מי המרגל','emoji':'אימוג\'י','mimic':'חיקוי משפחתי','agents':'סוכנים כפולים',
+    'trivia':'טריוויה','factfiction':'עובדה או בדיה','riddles':'חידות','bluffword':'שאלת הבלוף',
     'dare':'אמת או חובה','never':'מעולם לא','dice':'אתגר אקראי','fivesec':'5 שניות','bomb':'הפצצה המילולית','noyesno':'בלי כן ולא',
     'twotruths':'שתי אמיתות ושקר','wouldrather':'מה תעדיפו','knowme':'מי מכיר אותי הכי טוב','cats':'קטגוריות אקראיות','story':'סיפור בהמשכים'
   };
@@ -1885,6 +1965,180 @@
     var who = names.length>0 ? pick(names) : 'מישהו מבני המשפחה';
     document.getElementById('mimicText').textContent = mimicOrder[mimicIdx].split('___').join(who);
   });
+
+  /* ================= DOUBLE AGENTS ================= */
+  var agentsCountMap = {5:1, 6:1, 7:2, 8:2, 9:3};
+  var agentsPlayers = 5, agentsRoles = [], agentsCurrent = 0;
+  var agentsCountBox = document.getElementById('agentsCount');
+  [5,6,7,8,9].forEach(function(n,i){
+    var chip = document.createElement('button');
+    chip.className = 'chip' + (n===5?' selected':'');
+    chip.textContent = n + ' שחקנים';
+    chip.addEventListener('click', function(){
+      agentsCountBox.querySelectorAll('.chip').forEach(function(c){c.classList.remove('selected');});
+      chip.classList.add('selected');
+      agentsPlayers = n;
+    });
+    agentsCountBox.appendChild(chip);
+  });
+  function agentsStartGame(){
+    var numDouble = agentsCountMap[agentsPlayers] || 1;
+    var indices = [];
+    for(var i=0;i<agentsPlayers;i++) indices.push(i);
+    indices = shuffle(indices);
+    var doubleSet = indices.slice(0, numDouble);
+    agentsRoles = [];
+    for(var p=0;p<agentsPlayers;p++) agentsRoles.push(doubleSet.indexOf(p) !== -1);
+    agentsCurrent = 0;
+    document.getElementById('agentsSetupWrap').style.display='none';
+    document.getElementById('agentsDiscussWrap').style.display='none';
+    document.getElementById('agentsVoteWrap').style.display='none';
+    document.getElementById('agentsEndWrap').style.display='none';
+    document.getElementById('agentsRevealWrap').style.display='flex';
+    agentsShowPlayer();
+  }
+  function agentsShowPlayer(){
+    document.getElementById('agentsPlayerLabel').textContent = 'תור שחקן ' + (agentsCurrent+1) + ' מתוך ' + agentsPlayers;
+    document.getElementById('agentsHidden').style.display='block';
+    document.getElementById('agentsShown').style.display='none';
+  }
+  document.getElementById('agentsStart').addEventListener('click', agentsStartGame);
+  document.getElementById('agentsReveal').addEventListener('click', function(){
+    var isDouble = agentsRoles[agentsCurrent];
+    var text;
+    if(isDouble){
+      var others = [];
+      for(var i=0;i<agentsPlayers;i++){ if(i!==agentsCurrent && agentsRoles[i]) others.push(i+1); }
+      text = '🦹 אתה סוכן כפול! המטרה שלך: להישאר בסתר ולא להתגלות.';
+      if(others.length>0) text += ' הסוכן/ים הכפולים הנוספים: שחקן/ית מספר ' + others.join(', ');
+    } else {
+      text = '🕴️ אתה נאמן לשירות. המטרה שלך: לגלות מי הסוכנים הכפולים ולהצביע נגדם בסוף.';
+    }
+    document.getElementById('agentsRoleText').textContent = text;
+    document.getElementById('agentsHidden').style.display='none';
+    document.getElementById('agentsShown').style.display='block';
+  });
+  document.getElementById('agentsNextPlayer').addEventListener('click', function(){
+    agentsCurrent++;
+    if(agentsCurrent >= agentsPlayers){
+      document.getElementById('agentsRevealWrap').style.display='none';
+      document.getElementById('agentsDiscussWrap').style.display='flex';
+    } else {
+      agentsShowPlayer();
+    }
+  });
+  document.getElementById('agentsToVote').addEventListener('click', function(){
+    document.getElementById('agentsDiscussWrap').style.display='none';
+    document.getElementById('agentsVoteWrap').style.display='flex';
+    var box = document.getElementById('agentsVoteButtons');
+    box.innerHTML = '';
+    for(var i=0;i<agentsPlayers;i++){
+      (function(idx){
+        var chip = document.createElement('button');
+        chip.className = 'chip';
+        chip.textContent = 'שחקן ' + (idx+1);
+        chip.addEventListener('click', function(){
+          var wasDouble = agentsRoles[idx];
+          document.getElementById('agentsVoteWrap').style.display='none';
+          document.getElementById('agentsEndWrap').style.display='flex';
+          document.getElementById('agentsEndTitle').textContent = wasDouble ? '🎉 השירות ניצח!' : '🦹 הסוכנים הכפולים ניצחו!';
+          document.getElementById('agentsEndSub').textContent = 'שחקן ' + (idx+1) + ' היה/הייתה ' + (wasDouble ? 'סוכן כפול' : 'נאמן/ה לשירות');
+        });
+        box.appendChild(chip);
+      })(i);
+    }
+  });
+  document.getElementById('agentsAgain').addEventListener('click', agentsStartGame);
+  document.getElementById('agentsBackSetup').addEventListener('click', function(){
+    document.getElementById('agentsEndWrap').style.display='none';
+    document.getElementById('agentsSetupWrap').style.display='flex';
+  });
+
+  /* ================= BLUFF WORD ================= */
+  var bluffBank = [
+    {w:"אשנב", d:"פתח קטן בקיר או בדלת, לרוב לצורך מכירה או תשלום (כמו אשנב כרטיסים)"},
+    {w:"אבוב", d:"כלי נגינה מכלי הנשיפה מעץ, בעל צליל חד (אובואה)"},
+    {w:"אנפה", d:"עוף מים גדול עם רגליים וצוואר ארוכים"},
+    {w:"אשד", d:"מפל מים קטן"},
+    {w:"מדחן", d:"מכשיר לתשלום חניה ברחוב"},
+    {w:"מרזב", d:"צינור לניקוז מי גשמים מהגג"},
+    {w:"סוליה", d:"החלק התחתון של הנעל שנוגע ברצפה"},
+    {w:"אנקול", d:"וו קטן לתלייה"},
+    {w:"שרפרף", d:"כיסא קטן ונמוך בלי משענת"},
+    {w:"צלוחית", d:"כלי קטן ורדוד לתבלינים או רטבים"},
+    {w:"אבזם", d:"רכיב מתכת לסגירת חגורה או רצועה"},
+    {w:"כפכף", d:"נעל קיץ פתוחה לבית"},
+    {w:"צריח", d:"מגדל גבוה וצר בטירה, וגם כלי במשחק שחמט"},
+    {w:"סחבק", d:"סלנג: בחור נחמד וחברותי"},
+    {w:"אשכול", d:"קבוצת פירות התלויים יחד (כמו אשכול ענבים)"},
+    {w:"גזוזטרה", d:"מרפסת קטנה בולטת מחוץ לבניין"},
+    {w:"מגבעת", d:"כובע גברים קלאסי עם שוליים"},
+    {w:"אבזר", d:"חפץ נלווה שמשלים משהו (כמו אביזרי רכב)"},
+    {w:"סנפיר", d:"איבר שטוח ששימש דגים לשחייה"},
+    {w:"עקרב", d:"בעל חיים בעל עוקץ ומלקחיים, וגם מזל בגלגל המזלות"}
+  ];
+  var bluffPlayers = 3, bluffPool = [], bluffCurrentWord = null, bluffPlayerIdx = 0, bluffFakes = [];
+  var bluffCountBox = document.getElementById('bluffCount');
+  [3,4,5,6,7,8].forEach(function(n,i){
+    var chip = document.createElement('button');
+    chip.className = 'chip' + (n===3?' selected':'');
+    chip.textContent = n + ' שחקנים';
+    chip.addEventListener('click', function(){
+      bluffCountBox.querySelectorAll('.chip').forEach(function(c){c.classList.remove('selected');});
+      chip.classList.add('selected');
+      bluffPlayers = n;
+    });
+    bluffCountBox.appendChild(chip);
+  });
+  function bluffNextWord(){
+    if(bluffPool.length===0) bluffPool = shuffle(bluffBank);
+    bluffCurrentWord = bluffPool.pop();
+    bluffPlayerIdx = 0;
+    bluffFakes = [];
+    document.getElementById('bluffWord').textContent = bluffCurrentWord.w;
+    document.getElementById('bluffInput').value = '';
+    document.getElementById('bluffPlayerLabel').textContent = 'תור שחקן 1 מתוך ' + bluffPlayers;
+    document.getElementById('bluffSetupWrap').style.display='none';
+    document.getElementById('bluffRevealWrap').style.display='none';
+    document.getElementById('bluffCollectWrap').style.display='flex';
+  }
+  document.getElementById('bluffStart').addEventListener('click', bluffNextWord);
+  document.getElementById('bluffNextWord').addEventListener('click', bluffNextWord);
+  document.getElementById('bluffSubmit').addEventListener('click', function(){
+    var input = document.getElementById('bluffInput');
+    var val = input.value.trim();
+    if(val) bluffFakes.push(val);
+    input.value = '';
+    bluffPlayerIdx++;
+    if(bluffPlayerIdx >= bluffPlayers){
+      bluffShowReveal();
+    } else {
+      document.getElementById('bluffPlayerLabel').textContent = 'תור שחקן ' + (bluffPlayerIdx+1) + ' מתוך ' + bluffPlayers;
+      input.focus();
+    }
+  });
+  function bluffShowReveal(){
+    document.getElementById('bluffCollectWrap').style.display='none';
+    document.getElementById('bluffRevealWrap').style.display='flex';
+    var options = [{text: bluffCurrentWord.d, real:true}];
+    bluffFakes.forEach(function(f){ options.push({text:f, real:false}); });
+    options = shuffle(options);
+    var box = document.getElementById('bluffOpts');
+    box.innerHTML = '';
+    options.forEach(function(opt){
+      var b = document.createElement('button');
+      b.className = 'qopt';
+      b.textContent = opt.text;
+      b.addEventListener('click', function(){
+        Array.from(box.children).forEach(function(c){ c.disabled = true; });
+        options.forEach(function(o, oi){
+          if(o.real) box.children[oi].classList.add('correct');
+        });
+        if(!opt.real) b.classList.add('wrong');
+      });
+      box.appendChild(b);
+    });
+  }
 
   /* init trivia default bank so tab looks right even before Start */
   triviaBuild();
