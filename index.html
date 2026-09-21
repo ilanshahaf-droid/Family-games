@@ -244,7 +244,9 @@
   <button class="tab" data-go="dare"><span class="ic">🎡</span><span>אמת/חובה</span></button>
   <button class="tab" data-go="riddles"><span class="ic">🧩</span><span>חידות</span></button>
   <button class="tab" data-go="dice"><span class="ic">🎲</span><span>אתגרים</span></button>
-  <button class="tab" data-go="madlib"><span class="ic">🖋️</span><span>סיפור משוגע</span></button>
+  <button class="tab" data-go="spy"><span class="ic">🕵️</span><span>מי המרגל</span></button>
+  <button class="tab" data-go="whoami"><span class="ic">🎩</span><span>מי אני</span></button>
+  <button class="tab" data-go="twotruths"><span class="ic">🤥</span><span>אמת ושקר</span></button>
 </nav>
 
 <div id="stage">
@@ -264,7 +266,9 @@
           🎡 <b>אמת או חובה</b> — שאלות ומשימות קלילות<br>
           🧩 <b>חידות</b> — חידות היגיון עם חשיפת תשובה<br>
           🎲 <b>אתגרים</b> — אתגר אקראי קצר לכל אחד בתור<br>
-          🖋️ <b>סיפור משוגע</b> — כותבים מילים, מקבלים סיפור מטורף
+          🕵️ <b>מי המרגל</b> — כולם מקבלים מילה סודית, חוץ מהמרגל<br>
+          🎩 <b>מי אני</b> — מנחשים דמות בעזרת שאלות כן/לא<br>
+          🤥 <b>אמת ושקר</b> — נושא מפתיע לשלושה משפטים, שניים אמיתיים ואחד שקר
         </p>
       </div>
     </div>
@@ -414,37 +418,68 @@
     </div>
   </div>
 
-  <!-- MAD LIB -->
-  <div id="madlib" class="screen">
-    <div class="screen-inner top-align" id="madlibForm">
-      <h2 class="title">🖋️ סיפור משוגע</h2>
-      <p class="sub">כל אחד מוסיף מילה בלי לדעת את הסיפור — בסוף קוראים בקול ובוכים מצחוק</p>
+  <!-- SPY GAME -->
+  <div id="spy" class="screen">
+    <div class="screen-inner center" id="spySetupWrap">
+      <h2 class="title">🕵️ מי המרגל</h2>
+      <p class="sub">כולם מקבלים את אותה מילה סודית — חוץ ממרגל אחד. מעבירים את המכשיר בין השחקנים בלי להציץ אחד לשני, ואז שואלים שאלות כדי לחשוף את המרגל</p>
       <div class="panel">
-        <p class="field-label">שם של בעל חיים</p>
-        <input class="field" id="ml_animal" placeholder="לדוגמה: תרנגול">
-        <p class="field-label">פועל (בעבר, כמו "רץ", "קפץ")</p>
-        <input class="field" id="ml_verb" placeholder="לדוגמה: רקד">
-        <p class="field-label">שם עצם</p>
-        <input class="field" id="ml_noun" placeholder="לדוגמה: מקרר">
-        <p class="field-label">תואר</p>
-        <input class="field" id="ml_adj" placeholder="לדוגמה: מבולגן">
-        <p class="field-label">שם של מקום</p>
-        <input class="field" id="ml_place" placeholder="לדוגמה: הסופר">
-        <p class="field-label">מספר</p>
-        <input class="field" id="ml_number" placeholder="לדוגמה: 7">
-        <p class="field-label">שם של בן משפחה שיושב איתכם</p>
-        <input class="field" id="ml_name" placeholder="לדוגמה: אמא">
-        <button class="btn primary block lg" id="madlibGenerate">✨ צרו סיפור</button>
+        <p class="field-label">כמה שחקנים?</p>
+        <div class="chiprow" id="spyCount"></div>
+        <button class="btn primary block lg" id="spyStart">🎬 התחילו סבב</button>
       </div>
     </div>
-    <div class="screen-inner top-align" id="madlibResult" style="display:none;">
-      <h2 class="title">📖 הסיפור שלכם</h2>
+    <div class="screen-inner center" id="spyRevealWrap" style="display:none;">
+      <p class="sub" id="spyPlayerLabel">תור שחקן 1</p>
       <div class="panel">
-        <div class="story-output" id="madlibStory"></div>
-        <div class="row-actions">
-          <button class="btn outline" id="madlibBack">⬅ מילים חדשות</button>
-          <button class="btn primary" id="madlibShuffle">🔀 אותן מילים, סיפור אחר</button>
+        <div id="spyHidden">
+          <p style="text-align:center; color:var(--ink-soft); margin:0 0 16px;">מכשיר בידי השחקן? לחצו לחשוף רק לעצמכם</p>
+          <button class="btn primary block lg" id="spyReveal">👁 חשפו את התפקיד שלי</button>
         </div>
+        <div id="spyShown" style="display:none;">
+          <div class="big-word" id="spyRoleText" style="font-size:24px;"></div>
+          <button class="btn primary block lg" id="spyNextPlayer">מכסים ומעבירים הלאה →</button>
+        </div>
+      </div>
+    </div>
+    <div class="screen-inner center" id="spyEndWrap" style="display:none;">
+      <h2 class="title">🔎 כולם ראו את התפקיד!</h2>
+      <p class="sub">עכשיו שואלים שאלות בתורות ומנסים לגלות מי לא יודע את המילה. בהצלחה למרגל, ובהצלחה לכולם למצוא אותו</p>
+      <div class="row-actions">
+        <button class="btn outline" id="spyBackSetup">⚙ הגדרות</button>
+        <button class="btn primary" id="spyAgain">סבב חדש</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- WHO AM I -->
+  <div id="whoami" class="screen">
+    <div class="screen-inner" id="whoamiSetupWrap">
+      <h2 class="title">🎩 מי אני</h2>
+      <p class="sub">מראים את הדף למי שיושב לידכם (חוץ מהמנחש/ת), והמנחש/ת שואל/ת שאלות כן/לא כדי לגלות מי הוא</p>
+      <div class="panel">
+        <p class="field-label">קטגוריות</p>
+        <div class="chiprow" id="whoamiCats"></div>
+        <button class="btn primary block lg" id="whoamiStart">▶ התחילו</button>
+      </div>
+    </div>
+    <div class="screen-inner" id="whoamiPlayWrap" style="display:none;">
+      <div class="panel">
+        <p class="sub" style="margin-bottom:6px;">להראות לכולם חוץ מהמנחש/ת 🤫</p>
+        <div class="big-word" id="whoamiWord">דמות</div>
+        <button class="btn primary block lg" id="whoamiNext">ניחשו? מילה הבאה ←</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TWO TRUTHS AND A LIE -->
+  <div id="twotruths" class="screen">
+    <div class="screen-inner center">
+      <h2 class="title">🤥 שתי אמיתות ושקר אחד</h2>
+      <p class="sub">מי שבתור בוחר נושא, וממציא עליו 3 משפטים — שניים נכונים ואחד שקר. כולם מנחשים מה השקר</p>
+      <div class="panel">
+        <div class="big-word" id="twotruthsText" style="font-size:22px; min-height:2.6em;">לחצו "נושא חדש" כדי להתחיל</div>
+        <button class="btn primary block lg" id="twotruthsNext">🎯 נושא חדש</button>
       </div>
     </div>
   </div>
@@ -484,9 +519,11 @@
     "מקצועות": ["רופא שיניים","טבח","שוטר","כבאי","מורה","נהג מונית","חקלאי","עורך דין","אדריכל","צלם","טייס","גנן","חשמלאי","רואה חשבון","שחקן","זמר","פסיכולוג","נגר","תופר","עיתונאי","מלצר","שוער בית","מדריך טיולים","וטרינר"],
     "חפצים": ["מטרייה","משקפי שמש","מברשת שיניים","שעון יד","מקרר","אוזניות","מזוודה","כרית","מחשב נייד","טלפון סלולרי","מפתחות","נעליים","כובע","תיק גב","מצלמה","שואב אבק","מספריים","מחדד","מברג","מטריה הפוכה","סבון","מברשת שיער","עגיל","ארנק"],
     "פעולות": ["לרקוד סלסה","לצחוק בקול רם","לנחור","לגלוש בגלשן","לצייר","לנגן בגיטרה","לקפוץ בחבל","לצלול","לטפס על הר","לאפות עוגה","לשחות","לדוג","לצלם סלפי","לנסוע באופניים","לישון","לקרוא ספר","להתגלח","לצחצח שיניים","לקפל כביסה","להתאמן בחדר כושר","לשטוף כלים","לגהץ","לנגן בתופים","לרכב על סוס"],
-    "מדינות ומקומות": ["צרפת","יפן","ברזיל","מצרים","איטליה","הודו","אוסטרליה","ספרד","תאילנד","הכותל המערבי","מגדל אייפל","הפירמידות","הקולוסיאום","חומת סין","סטטוי הליברטי","ים המלח","אילת","ירושלים","טיילת תל אביב","הר האש"],
-    "אוכל ומשקאות": ["פיצה","סושי","חומוס","פלאפל","שוקולד","גלידה","פסטה","המבורגר","קפה הפוך","לימונדה","עוגת שוקולד","סלט ירקות","מרק עוף","שווארמה","בורקס","קרואסון","פנקייק","גבינה צהובה","אבטיח","תה נענע"],
-    "ספורט": ["כדורגל","כדורסל","טניס","שחייה","ג'ודו","רכיבה על אופניים","גלישת רוח","התעמלות","ריצת מרתון","אגרוף","גולף","סקי","כדוריד","ספורט אתגרי","קפיצה במוט","הרמת משקולות"]
+    "מדינות ומקומות": ["צרפת","יפן","ברזיל","מצרים","איטליה","הודו","אוסטרליה","ספרד","תאילנד","הכותל המערבי","מגדל אייפל","הפירמידות","הקולוסיאום","חומת סין","סטטוי הליברטי","ים המלח","אילת","ירושלים","טיילת תל אביב","הר האש","ארצות הברית","סקוטלנד","הולנד","קנדה"],
+    "אוכל ומשקאות": ["פיצה","סושי","חומוס","פלאפל","שוקולד","גלידה","פסטה","המבורגר","קפה הפוך","לימונדה","עוגת שוקולד","סלט ירקות","מרק עוף","שווארמה","בורקס","קרואסון","פנקייק","גבינה צהובה","אבטיח","תה נענע","פופקורן","זיתים","טחינה","מלפפון חמוץ"],
+    "ספורט": ["כדורגל","כדורסל","טניס","שחייה","ג'ודו","רכיבה על אופניים","גלישת רוח","התעמלות","ריצת מרתון","אגרוף","גולף","סקי","כדוריד","ספורט אתגרי","קפיצה במוט","הרמת משקולות","קרטה","צלילה","טניס שולחן","באולינג"],
+    "דמויות מהתנ\"ך": ["משה רבנו","נח","אברהם אבינו","שרה אמנו","יוסף הצדיק","דוד המלך","שלמה המלך","יונה הנביא","שמשון הגיבור","אסתר המלכה","מרדכי היהודי","רות המואבייה","יעקב אבינו","עשיו","מרים הנביאה","אהרון הכהן","גדעון","דבורה הנביאה","יצחק אבינו","לאה"],
+    "כלים ומשרד": ["מחשב נייד","מדפסת","סטפלר","מחק","סרגל","תיק בית ספר","לוח מחיק","עט כדורי","קלמר","מחברת","מחשבון","קלסר","מספריים","דבק","טוש","נייר דבק"]
   };
   var aliasSelectedCats = Object.keys(aliasWords);
   var aliasSeconds = 60;
@@ -578,7 +615,12 @@
       {q:"כמה חודשים יש בשנה?", o:["10","11","12","13"], a:2},
       {q:"מהו הצבע שמתקבל מערבוב כחול וצהוב?", o:["ירוק","סגול","כתום","אפור"], a:0},
       {q:"כמה צדדים יש לקוביה?", o:["4","6","8","10"], a:1},
-      {q:"מהי הבירה של יפן?", o:["אוסקה","קיוטו","טוקיו","יוקוהמה"], a:2}
+      {q:"מהי הבירה של יפן?", o:["אוסקה","קיוטו","טוקיו","יוקוהמה"], a:2},
+      {q:"כמה דקות יש בשעה?", o:["50","60","70","100"], a:1},
+      {q:"מהי הפירמידה הגיאומטרית עם בסיס מרובע?", o:["קובייה","פירמידה","גליל","כדור"], a:1},
+      {q:"מהו שמה של השפה המדוברת ביותר בעולם?", o:["אנגלית","ספרדית","סינית מנדרינית","ערבית"], a:2},
+      {q:"מהי בירת בריטניה?", o:["מנצ'סטר","לונדון","ליברפול","אדינבורו"], a:1},
+      {q:"כמה אותיות יש באלף-בית העברי?", o:["20","22","24","26"], a:1}
     ],
     "תנ\"ך": [
       {q:"מי היה המלך השלישי של ישראל המקראית?", o:["שאול","דוד","שלמה","רחבעם"], a:2},
@@ -590,7 +632,12 @@
       {q:"מי הוביל את בני ישראל אחרי מות משה?", o:["יהושע","שמואל","דוד","גדעון"], a:0},
       {q:"כמה בני יעקב היו?", o:["10","11","12","13"], a:2},
       {q:"מי ניצח את גוליית?", o:["שאול","דוד","יהונתן","שמשון"], a:1},
-      {q:"מהו שמו של ההר שבו קיבל משה את הלוחות?", o:["הר הזיתים","הר סיני","הר הכרמל","הר תבור"], a:1}
+      {q:"מהו שמו של ההר שבו קיבל משה את הלוחות?", o:["הר הזיתים","הר סיני","הר הכרמל","הר תבור"], a:1},
+      {q:"מי מכר את בכורתו בנזיד עדשים?", o:["יעקב","עשיו","ראובן","בנימין"], a:1},
+      {q:"מי פירש את חלומות פרעה?", o:["משה","יוסף","דניאל","שמואל"], a:1},
+      {q:"כמה שנים נדדו בני ישראל במדבר?", o:["10","20","40","70"], a:2},
+      {q:"מי הייתה אמו של שמואל הנביא?", o:["חנה","פנינה","מרים","רבקה"], a:0},
+      {q:"מי בנה את בית המקדש הראשון?", o:["דוד המלך","שלמה המלך","שאול המלך","חזקיהו"], a:1}
     ],
     "ישראל": [
       {q:"מהי בירת ישראל?", o:["תל אביב","ירושלים","חיפה","באר שבע"], a:1},
@@ -602,7 +649,12 @@
       {q:"מהי העיר הגדולה בצפון הארץ?", o:["חיפה","עפולה","נהריה","טבריה"], a:0},
       {q:"מהו שמו של פרח הבר הלאומי של ישראל?", o:["כלנית","ורד","חמנית","סחלב"], a:0},
       {q:"כמה ימי חג יש בפסח בישראל?", o:["5","6","7","8"], a:2},
-      {q:"מהי שפת האם הרשמית העיקרית בישראל?", o:["ערבית","עברית","אנגלית","רוסית"], a:1}
+      {q:"מהי שפת האם הרשמית העיקרית בישראל?", o:["ערבית","עברית","אנגלית","רוסית"], a:1},
+      {q:"מהו שמו של הנמל האווירי הבינלאומי הראשי של ישראל?", o:["שדה דב","רמון","בן גוריון","עובדה"], a:2},
+      {q:"מהי העיר שנחשבת לבירת ההייטק של ישראל?", o:["ירושלים","תל אביב","חיפה","אשדוד"], a:1},
+      {q:"באיזה חג נהוג לאכול סופגניות?", o:["פורים","פסח","חנוכה","סוכות"], a:2},
+      {q:"מהו שם הפרלמנט הישראלי?", o:["הכנסת","הסנאט","הפרלמנט","הבית"], a:0},
+      {q:"מהו ההר הגבוה בישראל?", o:["הר הכרמל","הר תבור","הר מירון","הר החרמון"], a:3}
     ],
     "מדע וטבע": [
       {q:"מהו איבר הגוף שאחראי על שאיבת דם?", o:["הריאה","הכבד","הלב","הכליה"], a:2},
@@ -614,7 +666,12 @@
       {q:"כמה זמן לוקח לכדור הארץ להקיף את השמש?", o:["יום אחד","חודש","שנה אחת","עשר שנים"], a:2},
       {q:"מהו איבר הנשימה העיקרי של האדם?", o:["הלב","הריאות","הכבד","הקיבה"], a:1},
       {q:"מהו הפרי שממנו מייצרים יין?", o:["תפוח","ענבים","תפוז","אגס"], a:1},
-      {q:"כמה חושים בסיסיים יש לאדם?", o:["3","4","5","6"], a:2}
+      {q:"כמה חושים בסיסיים יש לאדם?", o:["3","4","5","6"], a:2},
+      {q:"מהו איבר הגוף שמייצר אינסולין?", o:["הלב","הלבלב","הכבד","הריאה"], a:1},
+      {q:"מהו הגז המרכיב את רוב האוויר שאנו נושמים?", o:["חמצן","פחמן דו חמצני","חנקן","הליום"], a:2},
+      {q:"מהי היחידה למדידת טמפרטורה?", o:["ליטר","מעלות צלזיוס","קילוגרם","מטר"], a:1},
+      {q:"כמה רגליים יש לעכביש?", o:["6","8","10","12"], a:1},
+      {q:"מהו האיבר שבו נמצא המוח?", o:["בית החזה","הגולגולת","עמוד השדרה","הבטן"], a:1}
     ],
     "ספורט ובידור": [
       {q:"כמה שחקנים יש בקבוצת כדורגל במגרש?", o:["9","10","11","12"], a:2},
@@ -626,7 +683,21 @@
       {q:"באיזה ספורט קיים 'המכה השלישית'?", o:["כדורעף","כדורסל","כדורגל","בייסבול"], a:0},
       {q:"מהו הכלי המוזיקלי שיש לו 88 קלידים בדרך כלל?", o:["אקורדיון","פסנתר","עוגב","קלידים חשמליים"], a:1},
       {q:"כמה סטים בדרך כלל צריך לנצח כדי לזכות במשחק טניס גברים בגראנד סלאם?", o:["2","3","4","5"], a:1},
-      {q:"מהו שמו של המשחק העולמי בו בועטים בכדור לשער?", o:["כדורסל","כדורגל","כדוריד","בייסבול"], a:1}
+      {q:"מהו שמו של המשחק העולמי בו בועטים בכדור לשער?", o:["כדורסל","כדורגל","כדוריד","בייסבול"], a:1},
+      {q:"כמה נקודות שווה סל שלושה בכדורסל?", o:["1","2","3","4"], a:2},
+      {q:"מהו הצבע של החגורה הגבוהה ביותר בקראטה בדרך כלל?", o:["לבנה","צהובה","חומה","שחורה"], a:3},
+      {q:"כל כמה שנים מתקיים מונדיאל הכדורגל?", o:["2","3","4","5"], a:2},
+      {q:"מהו שם המקצב המוזיקלי המזוהה עם ריקודי סלוניקה?", o:["וואלס","טנגו","זורבה","סמבה"], a:2}
+    ],
+    "גיאוגרפיה": [
+      {q:"מהי המדינה הגדולה בעולם משטח?", o:["סין","ארה\"ב","רוסיה","קנדה"], a:2},
+      {q:"על איזו יבשת נמצא המדבר סהרה?", o:["אסיה","אפריקה","דרום אמריקה","אוסטרליה"], a:1},
+      {q:"מהו האוקיינוס הקטן ביותר?", o:["השקט","האטלנטי","ההודי","הארקטי"], a:3},
+      {q:"מהי המדינה שצורתה כמו מגף?", o:["יוון","איטליה","פורטוגל","קרואטיה"], a:1},
+      {q:"מהו ההר הגבוה בעולם?", o:["האוורסט","קילימנג'רו","מונבלאן","פוג'י"], a:0},
+      {q:"איזו מדינה נמצאת בין ישראל למצרים?", o:["ירדן","סוריה","אין מדינה כזו","לבנון"], a:2},
+      {q:"מהי בירת ארצות הברית?", o:["ניו יורק","וושינגטון","לוס אנג'לס","שיקגו"], a:1},
+      {q:"מהי המדינה שבה נמצא מגדל פיזה הנוטה?", o:["צרפת","ספרד","איטליה","יוון"], a:2}
     ]
   };
   var triviaCatsBox = document.getElementById('triviaCats');
@@ -696,7 +767,7 @@
 
   /* ================= CATEGORIES ================= */
   var hebrewLetters = ['א','ב','ג','ד','ה','ו','ז','ח','ט','י','כ','ל','מ','נ','ס','ע','פ','צ','ק','ר','ש','ת'];
-  var categoryPool = ['שם של עיר','שם של חיה','מאכל','שם פרטי','סרט או סדרה','מקצוע','צבע','מותג מוכר','ענף ספורט','כלי בית','פרי או ירק','מדינה','זמר או להקה','דמות מצוירת','כלי רכב','משחק','חג','פרח או עץ','ספר','כלי נגינה','מזג אוויר','חפץ בבית ספר','שם משפחה','עיר בישראל','משקה','בגד או פריט לבוש','כלי מטבח','אתר תיירות','תבלין','חיה מהחווה','מקצוע רפואי','דמות מהתנ"ך','צורה גאומטרית','ריח או בושם'];
+  var categoryPool = ['שם של עיר','שם של חיה','מאכל','שם פרטי','סרט או סדרה','מקצוע','צבע','מותג מוכר','ענף ספורט','כלי בית','פרי או ירק','מדינה','זמר או להקה','דמות מצוירת','כלי רכב','משחק','חג','פרח או עץ','ספר','כלי נגינה','מזג אוויר','חפץ בבית ספר','שם משפחה','עיר בישראל','משקה','בגד או פריט לבוש','כלי מטבח','אתר תיירות','תבלין','חיה מהחווה','מקצוע רפואי','דמות מהתנ"ך','צורה גאומטרית','ריח או בושם','נהר או ים','כלי כתיבה','סוג ריקוד','דמות היסטורית','יער או פארק','אפליקציה או אתר','כלי עבודה','סגנון מוזיקה','מקצוע שכמעט נעלם','כינוי חיבה','סוג בד','עונה בשנה','מבנה או בניין','אבן יקרה או מתכת'];
   var catsSeconds = 60, catsCount = 7;
   var catsTimerId = null;
   var catsTimeBox = document.getElementById('catsTime');
@@ -767,7 +838,16 @@
     "מעולם לא צילמתי סלפי יותר מ-10 פעמים לפני שיצאה טובה","מעולם לא ענתי לטלפון בטעות בלי לשים לב",
     "מעולם לא הפלתי אוכל על הבגדים לפני אירוע","מעולם לא שיחקתי משחק מחשב עד השעות הקטנות",
     "מעולם לא שכחתי לכבות תנור","מעולם לא התבלבלתי בין תאומים או אחים דומים",
-    "מעולם לא הרגשתי געגוע לבית ספר אחרי שסיימתי","מעולם לא קניתי בגד ולא לבשתי אותו אף פעם"
+    "מעולם לא הרגשתי געגוע לבית ספר אחרי שסיימתי","מעולם לא קניתי בגד ולא לבשתי אותו אף פעם",
+    "מעולם לא נשארתי ער/ה כל הלילה בלי כוונה","מעולם לא שלחתי הודעה ואז התחרטתי שנייה אחרי",
+    "מעולם לא נכנסתי לחדר ושכחתי למה נכנסתי","מעולם לא צחקתי כל כך שיצא לי דמעות",
+    "מעולם לא התלבשתי הפוך בטעות ויצאתי מהבית","מעולם לא הפחדתי מישהו בטעות",
+    "מעולם לא שרתי שיר לא נכון בטעות במקום השיר האמיתי","מעולם לא נשכתי משהו שחשבתי שזה אוכל ולא היה",
+    "מעולם לא נרדמתי באמצע יום כשלא תכננתי","מעולם לא קראתי ספר שלם בישיבה אחת",
+    "מעולם לא התבלבלתי בין ימות השבוע","מעולם לא נתתי מתנה ושכחתי למי כבר נתתי אותה בעבר",
+    "מעולם לא הרגשתי בושה מהריקוד שלי בחתונה","מעולם לא שיחקתי משחק והתעצבנתי יותר מדי",
+    "מעולם לא ניסיתי לבשל מתכון חדש וזה נכשל לגמרי","מעולם לא נתקעתי במעלית",
+    "מעולם לא שכחתי סיסמה לחשבון משלי"
   ];
   var neverOrder = shuffle(neverBank), neverIdx = 0;
   document.getElementById('neverNext').addEventListener('click', function(){
@@ -786,7 +866,11 @@
     "מהי התכונה שהכי היית רוצה לשפר בעצמך?","מה הדבר הכי מוזר שאכלת אי פעם?",
     "מתי בפעם האחרונה בכית ולמה?","מה הכינוי המביך ביותר שקראו לך פעם?",
     "אם היית יכול/ה להיות מפורסם/ת ביום אחד, על מה זה היה?","מהי השקרנות הקטנה שאת/ה עושה הכי הרבה?",
-    "מה הדבר שהכי מפחיד אותך בלילה?","מי האדם שהכי משפיע עליך בחיים ולמה?"
+    "מה הדבר שהכי מפחיד אותך בלילה?","מי האדם שהכי משפיע עליך בחיים ולמה?",
+    "מהו הרגע המביך ביותר שקרה לך מול אנשים זרים?","מה הדבר שהכי קשה לך להודות בו?",
+    "מהי הפעם האחרונה ששיקרת כדי להימנע ממשהו לא נעים?","מה הכי הרבה זמן ששיקרת על משהו קטן?",
+    "מהו הדבר שהכי היית רוצה שישכחו שעשית?","מי מהמשפחה היית רוצה להכיר טוב יותר?",
+    "מהי הפעם שבה הרגשת הכי גאה בעצמך?"
   ];
   var dareBank = [
     "חקה/י בעל חיים במשך 30 שניות","דבר/י במבטא מצחיק עד הסיבוב הבא","עשה/י 10 קפיצות מנוף",
@@ -796,7 +880,11 @@
     "דבר/י בלי להשתמש באות א' למשך 30 שניות","עמוד/י על רגל אחת ותספור/י עד 20",
     "תחקה/י שחקן כדורגל שמתאמן","תעשה/י את הקול הכי מצחיק שאת/ה יודע/ת",
     "תספר/י בדיחה בלי לצחוק בעצמך","תגיד/י את שמך המלא לאחור",
-    "תעשה/י תנועת יוגה מצחיקה למשך 15 שניות","תדבר/י כמו חדשן/ית חדשות במשך דקה"
+    "תעשה/י תנועת יוגה מצחיקה למשך 15 שניות","תדבר/י כמו חדשן/ית חדשות במשך דקה",
+    "תעשה/י ריקוד רובוט למשך 15 שניות","תספר/י על היום הכי טוב שהיה לך החודש",
+    "תדבר/י בלחישה עד שמישהו יבקש ממך להפסיק","תעמוד/י ותבצע/י תרגיל מתיחה של 20 שניות",
+    "תמצא/י 3 דברים בחדר שיש להם אותו צבע","תגיד/י פסוק או קטע שאת/ה זוכר/ת בעל פה",
+    "תעשה/י פרצוף כאילו טעמת משהו חמוץ מאוד","תספר/י תוכנית מטורפת לחופשה הבאה שלך"
   ];
   document.getElementById('dareTruth').addEventListener('click', function(){
     document.getElementById('dareSub').textContent = '🗣 אמת';
@@ -832,7 +920,17 @@
     {q:"מה אפשר למלא בלי לגעת בו כלל?", a:"חדר (ממלאים אותו באור/רעש)"},
     {q:"מהו הדבר שכשנותנים אותו, שומרים אותו?", a:"הבטחה"},
     {q:"מה נכנס יבש ויוצא רטוב?", a:"תה (שקית תה)"},
-    {q:"מהו הדבר שיש לכולם, אבל אף אחד לא יכול לאבד אותו לתמיד?", a:"צל"}
+    {q:"מהו הדבר שיש לכולם, אבל אף אחד לא יכול לאבד אותו לתמיד?", a:"צל"},
+    {q:"מה יש לו טבעת אך אין לו אצבע?", a:"טלפון (מצלצל) או עץ (טבעות גדילה)"},
+    {q:"מהו הדבר שככל שגדל, כך רואים אותו פחות?", a:"חושך"},
+    {q:"מה אפשר לראות עם עיניים עצומות?", a:"חלום"},
+    {q:"מהו החדר שאין בו רצפה, תקרה או קירות?", a:"פטרייה"},
+    {q:"איזה כוס אי אפשר למלא במים?", a:"כוס שבורה"},
+    {q:"מה תמיד נמצא לפניך אך לעולם לא רואים אותו?", a:"העתיד"},
+    {q:"יש בי ערים בלי בתים, יערות בלי עצים, וימים בלי מים. מה אני?", a:"מפה"},
+    {q:"מה יש לו לב אחד אך אין לו דם?", a:"חסה (או לב עץ)"},
+    {q:"מה ממלאים כשהוא ריק, ומרוקנים כשהוא מלא?", a:"כד או דלי"},
+    {q:"מהו הדבר שיורד אך לעולם לא רטוב?", a:"החושך / הלילה"}
   ];
   var riddleOrder = shuffle(riddleBank), riddleIdx = -1;
   function riddleShowNext(){
@@ -879,7 +977,16 @@
     "תספר/י מה היית עושה עם מיליון שקל",
     "תעשה/י תנועת קונג פו איטית במשך 10 שניות",
     "תגיד/י את שם המשפחה שלך תוך כדי שירה",
-    "תבחר/י מישהו בשולחן ותגיד/י תכונה טובה שלו"
+    "תבחר/י מישהו בשולחן ותגיד/י תכונה טובה שלו",
+    "תעשה/י את הקול של תינוק בוכה למשך 5 שניות",
+    "תספר/י על הפעם הראשונה שהתגאית בעצמך",
+    "תדמה/י שאת/ה מגיש/ת טלוויזיה ומראיין/ת את מי שיושב/ת לידך",
+    "תעצום/י עיניים ותנחש/י מי יושב איפה סביב השולחן",
+    "תגיד/י שיר ילדים אחד עד הסוף בלי לטעות",
+    "תעשה/י פרצוף של מישהו שקורא כתובית קטנה בלי משקפיים",
+    "תספר/י על מקום שהיית רוצה לבקר בו ולמה",
+    "תעמוד/י ותקד קידה מלכותית לכל אחד בשולחן",
+    "תגיד/י בדיוק 10 מילים שמתארות את המשפחה שלך"
   ];
   var diceOrder = shuffle(diceBank), diceIdx = -1;
   document.getElementById('diceNext').addEventListener('click', function(){
@@ -888,50 +995,136 @@
     document.getElementById('diceText').textContent = diceOrder[diceIdx];
   });
 
-  /* ================= MAD LIB ================= */
-  var madlibTemplates = [
-    function(w){ return "היה היה " + w.animal + " בשם " + w.name + " שגר ב" + w.place + ". יום אחד הוא " + w.verb + " ומצא " + w.noun + " " + w.adj + ". כולם ב" + w.place + " התכנסו לראות, וספרו שזה קרה " + w.number + " פעמים באותו שבוע. מאז, כל " + w.animal + " בסביבה רוצה " + w.noun + " משלו."; },
-    function(w){ return "בבוקר אחד " + w.name + " התעורר/ה, ולידו עמד " + w.animal + " " + w.adj + " שהחזיק " + w.noun + ". \"בוא נלך ל" + w.place + "\", אמר ה" + w.animal + ", ואז שניהם " + w.verb + " במשך " + w.number + " דקות עד שהגיעו."; },
-    function(w){ return "המתכון הסודי של " + w.name + " הוא: לוקחים " + w.noun + " " + w.adj + ", מוסיפים " + w.animal + " אחד קטן, " + w.verb + " חזק חזק, ואופים ב" + w.place + " למשך " + w.number + " דקות בדיוק. הטעם — פשוט בלתי נשכח."; },
-    function(w){ return "בחדשות הערב: " + w.animal + " " + w.adj + " נראה מסתובב ב" + w.place + " כשהוא נושא " + w.noun + ". עדים מספרים שהוא " + w.verb + " ברחוב מול " + w.number + " אנשים, ו" + w.name + " היה/הייתה הראשון/ה שצילם/ה את זה."; }
+  /* ================= SPY GAME ================= */
+  var spyWords = [
+    "בית ספר","בית חולים","מסעדה","חוף הים","גן חיות","מטוס","חתונה","קניון","בריכת שחייה",
+    "תחנת רכבת","קולנוע","מסיבת יום הולדת","ג'ונגל","הירח","ספרייה","מגרש כדורגל","מלון",
+    "תחנת דלק","פארק שעשועים","סופרמרקט","חדר כושר","מוזיאון","גן ילדים","תחנת משטרה",
+    "מכבסה","פיצרייה","אולם אירועים","ים פתוח","הר מושלג","מחנה קיץ","תחנת אוטובוס","קרקס"
   ];
-  var madlibLast = null, madlibTplIdx = 0;
-  function madlibCollect(){
-    return {
-      animal: document.getElementById('ml_animal').value.trim() || "תרנגול",
-      verb: document.getElementById('ml_verb').value.trim() || "רקד",
-      noun: document.getElementById('ml_noun').value.trim() || "מקרר",
-      adj: document.getElementById('ml_adj').value.trim() || "מבולגן",
-      place: document.getElementById('ml_place').value.trim() || "הסופר",
-      number: document.getElementById('ml_number').value.trim() || "7",
-      name: document.getElementById('ml_name').value.trim() || "אמא"
-    };
-  }
-  function madlibRender(){
-    var story = madlibTemplates[madlibTplIdx](madlibLast);
-    var esc = function(s){ return s.replace(/[&<>]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;'}[c]; }); };
-    Object.keys(madlibLast).forEach(function(k){
-      var v = madlibLast[k];
-      if(v) story = story.split(v).join('<b>'+esc(v)+'</b>');
+  var spyCount = 5, spyPlayers = 0, spyCurrent = 0, spySpyIndex = 0, spyWord = "";
+  var spyCountBox = document.getElementById('spyCount');
+  [4,5,6,7,8].forEach(function(n,i){
+    var chip = document.createElement('button');
+    chip.className = 'chip' + (n===5?' selected':'');
+    chip.textContent = n + ' שחקנים';
+    chip.addEventListener('click', function(){
+      spyCountBox.querySelectorAll('.chip').forEach(function(c){c.classList.remove('selected');});
+      chip.classList.add('selected');
+      spyCount = n;
     });
-    document.getElementById('madlibStory').innerHTML = story;
+    spyCountBox.appendChild(chip);
+  });
+  function spyStartRound(){
+    spyPlayers = spyCount;
+    spyCurrent = 0;
+    spySpyIndex = Math.floor(Math.random()*spyPlayers);
+    spyWord = pick(spyWords);
+    document.getElementById('spySetupWrap').style.display='none';
+    document.getElementById('spyEndWrap').style.display='none';
+    document.getElementById('spyRevealWrap').style.display='flex';
+    spyShowPlayer();
   }
-  document.getElementById('madlibGenerate').addEventListener('click', function(){
-    madlibLast = madlibCollect();
-    madlibTplIdx = Math.floor(Math.random()*madlibTemplates.length);
-    document.getElementById('madlibForm').style.display='none';
-    document.getElementById('madlibResult').style.display='flex';
-    madlibRender();
+  function spyShowPlayer(){
+    document.getElementById('spyPlayerLabel').textContent = 'תור שחקן ' + (spyCurrent+1) + ' מתוך ' + spyPlayers;
+    document.getElementById('spyHidden').style.display='block';
+    document.getElementById('spyShown').style.display='none';
+  }
+  document.getElementById('spyStart').addEventListener('click', spyStartRound);
+  document.getElementById('spyReveal').addEventListener('click', function(){
+    var isSpy = (spyCurrent === spySpyIndex);
+    document.getElementById('spyRoleText').textContent = isSpy
+      ? '🕵️ אתה המרגל! אתה לא יודע את המילה — נסה להתערב בשיחה בלי שיגלו'
+      : '🔑 המילה הסודית: ' + spyWord;
+    document.getElementById('spyHidden').style.display='none';
+    document.getElementById('spyShown').style.display='block';
   });
-  document.getElementById('madlibShuffle').addEventListener('click', function(){
-    var next = Math.floor(Math.random()*madlibTemplates.length);
-    if(madlibTemplates.length>1){ while(next===madlibTplIdx) next = Math.floor(Math.random()*madlibTemplates.length); }
-    madlibTplIdx = next;
-    madlibRender();
+  document.getElementById('spyNextPlayer').addEventListener('click', function(){
+    spyCurrent++;
+    if(spyCurrent >= spyPlayers){
+      document.getElementById('spyRevealWrap').style.display='none';
+      document.getElementById('spyEndWrap').style.display='flex';
+    } else {
+      spyShowPlayer();
+    }
   });
-  document.getElementById('madlibBack').addEventListener('click', function(){
-    document.getElementById('madlibResult').style.display='none';
-    document.getElementById('madlibForm').style.display='flex';
+  document.getElementById('spyAgain').addEventListener('click', spyStartRound);
+  document.getElementById('spyBackSetup').addEventListener('click', function(){
+    document.getElementById('spyEndWrap').style.display='none';
+    document.getElementById('spyRevealWrap').style.display='none';
+    document.getElementById('spySetupWrap').style.display='flex';
+  });
+
+  /* ================= WHO AM I ================= */
+  var whoamiBank = {
+    "קולנוע ודמויות": aliasWords["קולנוע וסלב'ס"],
+    "חיות": aliasWords["חיות"],
+    "מקצועות": aliasWords["מקצועות"],
+    "דמויות מהתנ\"ך": aliasWords["דמויות מהתנ\"ך"]
+  };
+  var whoamiSelectedCats = Object.keys(whoamiBank);
+  var whoamiPool = [];
+  var whoamiCatsBox = document.getElementById('whoamiCats');
+  Object.keys(whoamiBank).forEach(function(cat){
+    var chip = document.createElement('button');
+    chip.className = 'chip selected';
+    chip.textContent = cat;
+    chip.addEventListener('click', function(){
+      chip.classList.toggle('selected');
+      whoamiSelectedCats = Array.from(whoamiCatsBox.querySelectorAll('.chip.selected')).map(function(c){return c.textContent;});
+      if(whoamiSelectedCats.length===0){ chip.classList.add('selected'); whoamiSelectedCats=[cat]; }
+    });
+    whoamiCatsBox.appendChild(chip);
+  });
+  function whoamiBuild(){
+    var words = [];
+    whoamiSelectedCats.forEach(function(cat){ words = words.concat(whoamiBank[cat]); });
+    whoamiPool = shuffle(words);
+  }
+  function whoamiNextWord(){
+    if(whoamiPool.length===0) whoamiBuild();
+    document.getElementById('whoamiWord').textContent = whoamiPool.pop();
+  }
+  document.getElementById('whoamiStart').addEventListener('click', function(){
+    whoamiBuild();
+    document.getElementById('whoamiSetupWrap').style.display='none';
+    document.getElementById('whoamiPlayWrap').style.display='flex';
+    whoamiNextWord();
+  });
+  document.getElementById('whoamiNext').addEventListener('click', whoamiNextWord);
+
+  /* ================= TWO TRUTHS AND A LIE ================= */
+  var twotruthsBank = [
+    "משהו מהילדות שלך שרוב האנשים לא יודעים",
+    "מקום שטיילת בו",
+    "תחביב או כישרון נסתר שלך",
+    "משהו מביך שקרה לך בעבודה או בבית ספר",
+    "מאכל או משקה מוזר שאכלת פעם",
+    "הישג שאתה גאה בו",
+    "פחד או חשש קטן שיש לך",
+    "משהו שקנית ואף פעם לא השתמשת בו",
+    "חיה שהיתה לך פעם, או שרצית שתהיה לך",
+    "משהו שקרה לך בטיסה או בנסיעה",
+    "כישלון מצחיק שהפך לזיכרון טוב",
+    "מפגש עם אדם מפורסם או מיוחד",
+    "שיא אישי שלך (ריצה, אוכל, שינה, כל דבר)",
+    "משהו שהיית עושה בסתר כשהיית קטן/ה",
+    "דבר ראשון שקנית עם הכסף שלך",
+    "חלום מוזר שזכרת לאורך זמן",
+    "משהו שגרם לך לצחוק חזק לאחרונה",
+    "מסורת משפחתית מוזרה או מיוחדת",
+    "מקצוע שרצית פעם ולא הפך למציאות",
+    "משהו ששברת בטעות פעם",
+    "שיר שאתה מתבייש שאתה אוהב",
+    "פעם שהלכת לאיבוד",
+    "דבר שאתה טוב בו יותר משאנשים חושבים",
+    "רגע שבו הרגשת גאווה גדולה במישהו אחר"
+  ];
+  var twotruthsOrder = shuffle(twotruthsBank), twotruthsIdx = -1;
+  document.getElementById('twotruthsNext').addEventListener('click', function(){
+    twotruthsIdx++;
+    if(twotruthsIdx >= twotruthsOrder.length){ twotruthsOrder = shuffle(twotruthsBank); twotruthsIdx = 0; }
+    document.getElementById('twotruthsText').textContent = twotruthsOrder[twotruthsIdx];
   });
 
   /* init trivia default bank so tab looks right even before Start */
